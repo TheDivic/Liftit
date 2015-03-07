@@ -17,37 +17,101 @@
         </TransitionCollection>
     </Page.Transitions>
 
+    <Page.Resources>
+        <!-- Set wrapping for all text blocks -->
+        <Style TargetType="TextBlock">
+            <Setter Property="TextWrapping" Value="Wrap"></Setter>
+        </Style>
+
+        <DataTemplate x:Key="PersonalRecordTemplate">
+            <StackPanel>
+                <TextBlock Foreground="Gray" Text="{Binding DateOfRecord}"></TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontSize="24"><Run Text="{Binding ExerciseName}"></Run>: <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding Reps}"></Run> reps at <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding Weight}"></Run><Run Text="{Binding Path=DataContext.User.WeightUnit, ElementName=pivot}"></Run></TextBlock>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="PersonalRecordsHeaderTemplate">
+            <TextBlock FontSize="24">Your personal records:</TextBlock>
+        </DataTemplate>
+
+        <DataTemplate x:Key="WorkoutMuscleGroup">
+            <Grid Width="100"  Background="{ThemeResource PhoneAccentBrush}" Margin="0,0,5,0">
+                <TextBlock FontSize="20" Text="{Binding}" TextWrapping="Wrap"></TextBlock>
+            </Grid>
+        </DataTemplate>
+        
+        <DataTemplate x:Key="TrackedWorkoutTemplate">
+            <StackPanel Margin="0,10,0,0">
+                <TextBlock FontSize="24" Text="{Binding WorkoutDate}"></TextBlock>
+                <TextBlock FontSize="24" Text="{Binding WorkoutName}"></TextBlock>
+                <GridView ItemsSource="{Binding WorkoutMuscleGroups}" ItemTemplate="{StaticResource WorkoutMuscleGroup}">
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid Orientation="Horizontal" MaximumRowsOrColumns="3"></ItemsWrapGrid>
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                </GridView>
+            </StackPanel>
+        </DataTemplate>
+        
+        <DataTemplate x:Key="WeekTemplate">
+            <StackPanel>
+                <!-- Week identifer -->
+                <TextBlock FontSize="24" Foreground="Gray" Text="{Binding Key}"></TextBlock>
+                <ListView ItemsSource="{Binding Value}" ItemTemplate="{StaticResource TrackedWorkoutTemplate}"></ListView>
+            </StackPanel>
+        </DataTemplate>
+    </Page.Resources>
     <Grid>
         <Pivot x:Uid="Pivot" 
                Title="Liftit - an app for real strength training" 
                x:Name="pivot" 
-               CommonNavigationTransitionInfo.IsStaggerElement="True"
-               DataContext="{Binding appData}">
-            <!--Pivot item one-->
+               CommonNavigationTransitionInfo.IsStaggerElement="True">
+
+            <!-- Dashboard pivot item -->
             <PivotItem
                 x:Uid="DashboardPivotItem"
                 Margin="19,14.5,0,0"
                 Header="dashboard"
                 CommonNavigationTransitionInfo.IsStaggerElement="True">
-                <!--Double line list with text wrapping-->
+                <StackPanel Orientation="Vertical">
+                    <!-- Dashboard messages -->
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock FontSize="24">Hello, <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding User.Username}"></Run>!</TextBlock>
+                        <TextBlock FontSize="24">Your current weight is <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding User.Weight}"></Run><Run Text="{Binding User.WeightUnit}"></Run>.</TextBlock>
+                        <TextBlock FontSize="24">You tracked <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding WorkoutsThisMonth}"></Run> workouts this month.</TextBlock>
+                        <TextBlock FontSize="24">You are <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding WorkoutsBehindSchedule}"></Run> workouts behind schedule.</TextBlock>
+                    </StackPanel>
+
+                    <!-- Personal records -->
+                    <ListView 
+                        ItemsSource="{Binding User.DisplayedPersonalRecords}"
+                        ItemTemplate="{StaticResource PersonalRecordTemplate}"
+                        HeaderTemplate="{StaticResource PersonalRecordsHeaderTemplate}"
+                        Margin="0,20,0,0">
+                    </ListView>
+                </StackPanel>
             </PivotItem>
 
-            <!--Pivot item two-->
+            <!--Tracked workouts pivot item -->
             <PivotItem
-                x:Uid="PivotItem2"
+                x:Uid="WorkoutsPivotItem"
                 Margin="19,14.5,0,0"
-                Header="second">
-                <!--Double line list no text wrapping-->
+                Header="workouts">
+                <ListView ItemsSource="{Binding WorkoutsByWeek}" ItemTemplate="{StaticResource WeekTemplate}">
+                </ListView>
             </PivotItem>
         </Pivot>
     </Grid>
 
     <Page.BottomAppBar>
         <CommandBar>
-            <AppBarButton x:Uid="AddAppBarButton" x:Name="AddAppBarButton" Label="add" Icon="Add" />
+            <AppBarButton x:Uid="AddAppBarButton" x:Name="AddAppBarButton" Icon="Add" Label="Add" />
             <CommandBar.SecondaryCommands>
-                <AppBarButton x:Uid="SecondaryButton1" x:Name="SecondaryButton1" Label="secondary command 1" />
-                <AppBarButton x:Uid="SecondaryButton2" x:Name="SecondaryButton2" Label="secondary command 2" />
+                <AppBarButton x:Uid="HelpButton" x:Name="HelpButton" Label="How to use this app?" />
+                <AppBarButton x:Uid="EditProfileButton" x:Name="EditProfileButton" Label="Edit your profile" />
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </Page.BottomAppBar>

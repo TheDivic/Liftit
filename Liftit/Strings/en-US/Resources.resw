@@ -121,7 +121,7 @@
     <value>add</value>
   </data>
   <data name="Header.Text" xml:space="preserve">
-    <value>MY APPLICATION</value>
+    <value>Liftit - an app for real strength training</value>
   </data>
   <data name="NavigationFailedExceptionMessage" xml:space="preserve">
     <value>Navigation failed.</value>
@@ -133,7 +133,7 @@
     <value>Item Title: {0}</value>
   </data>
   <data name="Pivot.Title" xml:space="preserve">
-    <value>MY APPLICATION</value>
+    <value>Liftit - an app for real strength training</value>
   </data>
   <data name="PivotItem1.Header" xml:space="preserve">
     <value>first</value>

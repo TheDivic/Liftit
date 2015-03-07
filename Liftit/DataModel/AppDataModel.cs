@@ -19,13 +19,13 @@ namespace Liftit.DataModel
             get;
             set;
         }
-        public List<string> workoutNames;
+        public ObservableCollection<string> workoutNames;
 
         public AppDataModel()
         {
             this.User = new UserModel("Anonymous", 0, "nil", 0);
             this.TrackedWorkouts = new ObservableCollection<WorkoutModel>();
-            this.workoutNames = new List<string>() { "Squat", "Deadlift", "Overhead press", "Lunges", "Bench press", "Biceps curl", "Triceps rope extension", "Lat pulldowns" };
+            this.workoutNames = new ObservableCollection<string>() { "Squat", "Deadlift", "Overhead press", "Lunges", "Bench press", "Biceps curl", "Triceps rope extension", "Lat pulldowns" };
         }
 
         public void LoadDataFromMemory()

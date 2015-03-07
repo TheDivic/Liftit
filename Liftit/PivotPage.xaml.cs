@@ -53,8 +53,44 @@ namespace Liftit
 
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            this.DefaultViewModel["appData"] = (App.Current as App).appData;
+            var appData = (App.Current as App).appData;
+            this.DefaultViewModel["User"] = appData.User;
+            this.DefaultViewModel["WorkoutsThisMonth"] = 5;
+            this.DefaultViewModel["WorkoutsBehindSchedule"] = 2;
+            this.DefaultViewModel["WorkoutsByWeek"] = GroupWorkoutsByWeek(appData.TrackedWorkouts);
         }
+
+        private Dictionary<string, List<WorkoutModel>> GroupWorkoutsByWeek(ObservableCollection<WorkoutModel> workoutsModel)
+        {
+            var workoutsByWeekQuery = workoutsModel.Select(workout => new { Week = GetWeekFromDate(workout.WorkoutDate), Workout = workout });
+
+            Dictionary<string, List<WorkoutModel>> workouts = new Dictionary<string, List<WorkoutModel>>();
+            foreach (var workoutPair in workoutsByWeekQuery)
+            {
+                if (workouts.ContainsKey(workoutPair.Week))
+                {
+                    workouts[workoutPair.Week].Add(workoutPair.Workout);
+                }
+                else
+                {
+                    workouts.Add(workoutPair.Week, new List<WorkoutModel>() { workoutPair.Workout });
+                }
+            }
+            return workouts;
+        }
+
+        /// <summary>
+        /// Get a string representing the week of a given date
+        /// </summary>
+        private string GetWeekFromDate(DateTime dateTime)
+        {
+            var day = dateTime.Day;
+            var dayOfWeek = (int)dateTime.DayOfWeek - 1;
+            var startOfWeek = dateTime.AddDays(-dayOfWeek);
+            var endOfWeek = startOfWeek.AddDays(7);
+            return String.Format("Week {0} to {1}", startOfWeek.ToString("dd.MM"), endOfWeek.ToString("dd.MM"));
+        }
+
 
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
