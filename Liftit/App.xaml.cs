@@ -1,4 +1,5 @@
 ﻿using Liftit.Common;
+using Liftit.DataModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,6 +28,7 @@ namespace Liftit
     public sealed partial class App : Application
     {
         private TransitionCollection transitions;
+        public AppDataModel appData;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
@@ -36,6 +38,9 @@ namespace Liftit
         {
             this.InitializeComponent();
             this.Suspending += this.OnSuspending;
+
+            this.appData = new AppDataModel();
+            this.appData.LoadDataFromMemory();
         }
 
         /// <summary>
