@@ -29,6 +29,7 @@ namespace Liftit
         private readonly NavigationHelper navigationHelper;
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
         private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
+        private AppDataModel appData;
 
         public PivotPage()
         {
@@ -39,6 +40,8 @@ namespace Liftit
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+
+            this.appData = (App.Current as App).appData;
         }
 
         public NavigationHelper NavigationHelper
@@ -53,44 +56,8 @@ namespace Liftit
 
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
-            var appData = (App.Current as App).appData;
-            this.DefaultViewModel["User"] = appData.User;
-            this.DefaultViewModel["WorkoutsThisMonth"] = 5;
-            this.DefaultViewModel["WorkoutsBehindSchedule"] = 2;
-            this.DefaultViewModel["WorkoutsByWeek"] = GroupWorkoutsByWeek(appData.TrackedWorkouts);
+            this.DefaultViewModel["appData"] = appData;
         }
-
-        private Dictionary<string, List<WorkoutModel>> GroupWorkoutsByWeek(ObservableCollection<WorkoutModel> workoutsModel)
-        {
-            var workoutsByWeekQuery = workoutsModel.Select(workout => new { Week = GetWeekFromDate(workout.WorkoutDate), Workout = workout });
-
-            Dictionary<string, List<WorkoutModel>> workouts = new Dictionary<string, List<WorkoutModel>>();
-            foreach (var workoutPair in workoutsByWeekQuery)
-            {
-                if (workouts.ContainsKey(workoutPair.Week))
-                {
-                    workouts[workoutPair.Week].Add(workoutPair.Workout);
-                }
-                else
-                {
-                    workouts.Add(workoutPair.Week, new List<WorkoutModel>() { workoutPair.Workout });
-                }
-            }
-            return workouts;
-        }
-
-        /// <summary>
-        /// Get a string representing the week of a given date
-        /// </summary>
-        private string GetWeekFromDate(DateTime dateTime)
-        {
-            var day = dateTime.Day;
-            var dayOfWeek = (int)dateTime.DayOfWeek - 1;
-            var startOfWeek = dateTime.AddDays(-dayOfWeek);
-            var endOfWeek = startOfWeek.AddDays(7);
-            return String.Format("Week {0} to {1}", startOfWeek.ToString("dd.MM"), endOfWeek.ToString("dd.MM"));
-        }
-
 
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
@@ -111,5 +78,14 @@ namespace Liftit
         }
 
         #endregion
+
+        private void AddAppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            ExerciseModel exerciseOne = new ExerciseModel("SQ", "Squat", ExerciseModel.MuscleGroups.Quads, new List<ExerciseSetModel> { new ExerciseSetModel(90, 5), new ExerciseSetModel(110, 3) });
+            ExerciseModel exerciseTwo = new ExerciseModel("OHP", "Overhead press", ExerciseModel.MuscleGroups.Shoulders, new List<ExerciseSetModel> { new ExerciseSetModel(50, 5), new ExerciseSetModel(55, 5) });
+            ExerciseModel exerciseThree = new ExerciseModel("DL", "Deadlift", ExerciseModel.MuscleGroups.Back, new List<ExerciseSetModel> { new ExerciseSetModel(110, 5), new ExerciseSetModel(135, 5) });
+
+            this.appData.AddWorkout("Test", new DateTime(2014, 6, 12), "Titan gym", new List<ExerciseModel> { exerciseOne, exerciseTwo, exerciseThree });
+        }
     }
 }

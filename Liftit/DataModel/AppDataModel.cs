@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Liftit.Common;
 
 namespace Liftit.DataModel
 {
@@ -17,20 +18,63 @@ namespace Liftit.DataModel
         public ObservableCollection<WorkoutModel> TrackedWorkouts
         {
             get;
-            set;
+            private set;
         }
-        public ObservableCollection<string> workoutNames;
+
+        public Dictionary<string, List<WorkoutModel>> WorkoutsByWeek { get; private set; }
+        public ObservableCollection<string> exerciseNames;
+        // Calculate this every time the app is started
+        public int WorkoutsThisMonth { get; private set; }
+        public int WorkoutsBehindSchedule { get; private set; }
 
         public AppDataModel()
         {
             this.User = new UserModel("Anonymous", 0, "nil", 0);
             this.TrackedWorkouts = new ObservableCollection<WorkoutModel>();
-            this.workoutNames = new ObservableCollection<string>() { "Squat", "Deadlift", "Overhead press", "Lunges", "Bench press", "Biceps curl", "Triceps rope extension", "Lat pulldowns" };
+            this.WorkoutsByWeek = new Dictionary<string,List<WorkoutModel>>();
+            this.exerciseNames = new ObservableCollection<string>() { "Squat", "Deadlift", "Overhead press", "Lunges", "Bench press", "Biceps curl", "Triceps rope extension", "Lat pulldowns" };
+            this.WorkoutsThisMonth = 5;
+            this.WorkoutsBehindSchedule = 2;
         }
 
         public void LoadDataFromMemory()
         {
             LoadTestData();
+        }
+
+        public void AddWorkout(string workoutName, DateTime workoutDate, string location, List<ExerciseModel> finishedExercises)
+        {
+            this.TrackedWorkouts.Add(new WorkoutModel(workoutName, workoutDate, location, finishedExercises));
+            this.WorkoutsByWeek = GroupWorkoutsByWeek(this.TrackedWorkouts);
+            OnPropertyChanged("WorkoutsByWeek");
+        }
+
+        private Dictionary<string, List<WorkoutModel>> GroupWorkoutsByWeek(ObservableCollection<WorkoutModel> workoutsModel)
+        {
+            var workoutsByWeekQuery = workoutsModel.Select(workout => new { Week = GetWeekFromDate(workout.WorkoutDate), Workout = workout });
+
+            var workouts = new Dictionary<string, List<WorkoutModel>>();
+            foreach (var workoutPair in workoutsByWeekQuery)
+            {
+                if (workouts.ContainsKey(workoutPair.Week))
+                {
+                    workouts[workoutPair.Week].Add(workoutPair.Workout);
+                }
+                else
+                {
+                    workouts.Add(workoutPair.Week, new List<WorkoutModel>() { workoutPair.Workout });
+                }
+            }
+            return workouts;
+        }
+
+        private string GetWeekFromDate(DateTime dateTime)
+        {
+            var day = dateTime.Day;
+            var dayOfWeek = (int)dateTime.DayOfWeek - 1;
+            var startOfWeek = dateTime.AddDays(-dayOfWeek);
+            var endOfWeek = startOfWeek.AddDays(7);
+            return String.Format("Week {0} to {1}", startOfWeek.ToString("dd.MM"), endOfWeek.ToString("dd.MM"));
         }
 
         private void LoadTestData()
@@ -53,11 +97,8 @@ namespace Liftit.DataModel
             ExerciseModel exerciseEight = new ExerciseModel("BC", "Bicep curl", ExerciseModel.MuscleGroups.Biceps, new List<ExerciseSetModel> { new ExerciseSetModel(20, 8), new ExerciseSetModel(20, 5) });
 
             // create Workouts
-            var workoutOne = new WorkoutModel("Cucanj ludnica", new DateTime(2014, 5, 12), "Titan gym", new List<ExerciseModel> { exerciseOne, exerciseTwo, exerciseFive, exerciseSix, exerciseSeven, exerciseEight });
-            var workoutTwo = new WorkoutModel("Pokidao mrtvo", new DateTime(2014, 5, 30), "Titan gym", new List<ExerciseModel> { exerciseThree, exerciseFour });
-
-            this.TrackedWorkouts.Add(workoutOne);
-            this.TrackedWorkouts.Add(workoutTwo);
+            this.AddWorkout("Cucanj ludnica", new DateTime(2014, 5, 12), "Titan gym", new List<ExerciseModel> { exerciseOne, exerciseTwo, exerciseFive, exerciseSix, exerciseSeven, exerciseEight });
+            this.AddWorkout("Pokidao mrtvo", new DateTime(2014, 5, 30), "Titan gym", new List<ExerciseModel> { exerciseThree, exerciseFour });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -68,7 +68,8 @@
         <Pivot x:Uid="Pivot" 
                Title="Liftit - an app for real strength training" 
                x:Name="pivot" 
-               CommonNavigationTransitionInfo.IsStaggerElement="True">
+               CommonNavigationTransitionInfo.IsStaggerElement="True"
+               DataContext="{Binding appData}">
 
             <!-- Dashboard pivot item -->
             <PivotItem
@@ -108,7 +109,7 @@
 
     <Page.BottomAppBar>
         <CommandBar>
-            <AppBarButton x:Uid="AddAppBarButton" x:Name="AddAppBarButton" Icon="Add" Label="Add" />
+            <AppBarButton x:Uid="AddAppBarButton" x:Name="AddAppBarButton" Icon="Add" Label="Add" Click="AddAppBarButton_Click" />
             <CommandBar.SecondaryCommands>
                 <AppBarButton x:Uid="HelpButton" x:Name="HelpButton" Label="How to use this app?" />
                 <AppBarButton x:Uid="EditProfileButton" x:Name="EditProfileButton" Label="Edit your profile" />
