@@ -70,7 +70,6 @@ namespace Liftit
                 // Associate the frame with a SuspensionManager key.
                 SuspensionManager.RegisterFrame(rootFrame, "AppFrame");
 
-                // TODO: Change this value to a cache size that is appropriate for your application.
                 rootFrame.CacheSize = 1;
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)

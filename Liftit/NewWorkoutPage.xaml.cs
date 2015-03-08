@@ -1,6 +1,8 @@
 ﻿using Liftit.Common;
+using Liftit.DataModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -27,6 +29,7 @@ namespace Liftit
     {
         private NavigationHelper navigationHelper;
         private ObservableDictionary defaultViewModel = new ObservableDictionary();
+        public AppDataModel appData;
 
         public NewWorkoutPage()
         {
@@ -35,6 +38,7 @@ namespace Liftit
             this.navigationHelper = new NavigationHelper(this);
             this.navigationHelper.LoadState += this.NavigationHelper_LoadState;
             this.navigationHelper.SaveState += this.NavigationHelper_SaveState;
+            this.appData = (App.Current as App).appData;
         }
 
         /// <summary>
@@ -67,6 +71,7 @@ namespace Liftit
         /// session.  The state will be null the first time a page is visited.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            this.DefaultViewModel["appData"] = appData;
         }
 
         /// <summary>
@@ -107,5 +112,50 @@ namespace Liftit
         }
 
         #endregion
+
+        // TODO: add validation for user input
+        private void SaveWorkoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            List<FinishedExerciseModel> finishedExercises = new List<FinishedExerciseModel>();
+            
+            foreach (StackPanel sp in FinishedExercisesPanel.Children)
+            {
+                var combo = (ComboBox)sp.Children.OfType<ComboBox>().FirstOrDefault();
+                if (combo != null && combo.SelectedItem != null)
+                {
+                    finishedExercises.Add(new FinishedExerciseModel((ExerciseModel)combo.SelectedItem, new List<ExerciseSetModel>()));
+                }
+            }
+
+            appData.AddWorkout(WorkoutName.Text, WorkoutDate.Date.DateTime, WorkoutLocation.Text, finishedExercises);
+            Frame.Navigate(typeof(PivotPage));
+        }
+
+        private void AddExerciseButton_Click(object sender, RoutedEventArgs e)
+        {
+            StackPanel newExercisePanel = new StackPanel();
+            newExercisePanel.Orientation = Orientation.Horizontal;
+            newExercisePanel.HorizontalAlignment = HorizontalAlignment.Stretch;
+
+            int exerciseNumber = FinishedExercisesPanel.Children.Count + 1;
+            TextBlock numberTextBlock = new TextBlock();
+            numberTextBlock.FontSize = 30;
+            numberTextBlock.Text = exerciseNumber + ". ";
+            numberTextBlock.Margin = new Thickness(0, 10, 10, 0);
+            newExercisePanel.Children.Add(numberTextBlock);
+
+            ComboBox exerciseNamesComboBox = new ComboBox();
+            exerciseNamesComboBox.ItemsSource = appData.KnownExercises;
+            object comboItemTemplateObject;
+            this.Resources.TryGetValue("ComboItemTemplate", out comboItemTemplateObject);
+            exerciseNamesComboBox.ItemTemplate = (DataTemplate)comboItemTemplateObject;
+
+            exerciseNamesComboBox.Margin = new Thickness(0,0,0,0);
+
+            newExercisePanel.Children.Add(exerciseNamesComboBox);
+
+            FinishedExercisesPanel.Children.Add(newExercisePanel);
+        }
+
     }
 }

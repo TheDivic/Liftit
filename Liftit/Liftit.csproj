@@ -98,7 +98,6 @@
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="DataModel\AppDataModel.cs" />
-    <Compile Include="DataModel\SampleDataSource.cs" />
     <Compile Include="NewWorkoutPage.xaml.cs">
       <DependentUpon>NewWorkoutPage.xaml</DependentUpon>
     </Compile>
@@ -128,7 +127,6 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DataModel\SampleData.json" />
     <PRIResource Include="Strings\en-US\Resources.resw">
       <SubType>Designer</SubType>
     </PRIResource>

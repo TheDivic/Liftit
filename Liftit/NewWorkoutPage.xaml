@@ -3,11 +3,15 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Liftit"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}">
+    <Page.Resources>
+        <DataTemplate x:Name="ComboItemTemplate">
+            <TextBlock Text="{Binding ExerciseName}"></TextBlock>
+        </DataTemplate>
+    </Page.Resources>
+    
     <Grid x:Name="LayoutRoot">
 
         <Grid.ChildrenTransitions>
@@ -28,8 +32,24 @@
         </StackPanel>
 
         <!--TODO: Content should be placed within the following grid-->
-        <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
-
+        <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0" DataContext="{Binding appData}">
+            <StackPanel>
+                <TextBlock FontSize="24">I did this workout on:</TextBlock>
+                <DatePicker x:Name="WorkoutDate"></DatePicker>
+                <TextBlock FontSize="24">I did it at:</TextBlock>
+                <TextBox x:Name="WorkoutLocation" PlaceholderText="Name of your gym"></TextBox>
+                <TextBlock TextWrapping="Wrap" FontSize="24">My short note about this workout:</TextBlock>
+                <TextBox x:Name="WorkoutName" MaxLength="50" PlaceholderText="Max 50 characters"></TextBox>
+                <TextBlock TextWrapping="Wrap" FontSize="24">I did these exercises:</TextBlock>
+                <StackPanel x:Name="FinishedExercisesPanel"></StackPanel>
+                <Button x:Name="AddExerciseButton" Click="AddExerciseButton_Click">Click to add an exercise</Button>
+                
+                <!-- TODO: Make these command bar buttons with icons -->
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="SaveWorkoutButton" Click="SaveWorkoutButton_Click" Content="Save workout" />
+                    <Button Margin="10, 0, 0 ,0" Content="Clear workout"/>
+                </StackPanel>
+            </StackPanel>
         </Grid>
     </Grid>
 </Page>

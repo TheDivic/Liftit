@@ -1,6 +1,5 @@
 ﻿using Liftit.Common;
 using Liftit.DataModel;
-using Liftit.Data;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -61,7 +60,7 @@ namespace Liftit
 
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
-            // TODO: Save the unique state of the page here.
+            
         }
 
 
@@ -81,11 +80,7 @@ namespace Liftit
 
         private void AddAppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            ExerciseModel exerciseOne = new ExerciseModel("SQ", "Squat", ExerciseModel.MuscleGroups.Quads, new List<ExerciseSetModel> { new ExerciseSetModel(90, 5), new ExerciseSetModel(110, 3) });
-            ExerciseModel exerciseTwo = new ExerciseModel("OHP", "Overhead press", ExerciseModel.MuscleGroups.Shoulders, new List<ExerciseSetModel> { new ExerciseSetModel(50, 5), new ExerciseSetModel(55, 5) });
-            ExerciseModel exerciseThree = new ExerciseModel("DL", "Deadlift", ExerciseModel.MuscleGroups.Back, new List<ExerciseSetModel> { new ExerciseSetModel(110, 5), new ExerciseSetModel(135, 5) });
-
-            this.appData.AddWorkout("Test", new DateTime(2014, 6, 12), "Titan gym", new List<ExerciseModel> { exerciseOne, exerciseTwo, exerciseThree });
+            Frame.Navigate(typeof(NewWorkoutPage));
         }
     }
 }

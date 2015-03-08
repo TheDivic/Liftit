@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Liftit.Common;
 
+// TODO: REFACTOR and add coments to code!
 namespace Liftit.DataModel
 {
     /// <summary>
@@ -22,8 +23,9 @@ namespace Liftit.DataModel
         }
 
         public Dictionary<string, List<WorkoutModel>> WorkoutsByWeek { get; private set; }
-        public ObservableCollection<string> exerciseNames;
-        // Calculate this every time the app is started
+        public ObservableCollection<ExerciseModel> KnownExercises {get; private set; }
+        
+        // TODO: Calculate this every time the app is started
         public int WorkoutsThisMonth { get; private set; }
         public int WorkoutsBehindSchedule { get; private set; }
 
@@ -32,7 +34,17 @@ namespace Liftit.DataModel
             this.User = new UserModel("Anonymous", 0, "nil", 0);
             this.TrackedWorkouts = new ObservableCollection<WorkoutModel>();
             this.WorkoutsByWeek = new Dictionary<string,List<WorkoutModel>>();
-            this.exerciseNames = new ObservableCollection<string>() { "Squat", "Deadlift", "Overhead press", "Lunges", "Bench press", "Biceps curl", "Triceps rope extension", "Lat pulldowns" };
+            // "Deadlift", "Overhead press", "Lunges", "Bench press", "Biceps curl", "Triceps rope extension", "Lat pulldowns"
+            this.KnownExercises = new ObservableCollection<ExerciseModel>() 
+            { 
+                new ExerciseModel("SQ", "Squat", ExerciseModel.MuscleGroups.Quads),
+                new ExerciseModel("DL", "Deadlift", ExerciseModel.MuscleGroups.Back), 
+                new ExerciseModel("OHP", "Overhead press", ExerciseModel.MuscleGroups.Shoulders),
+                new ExerciseModel("BP", "Bench press", ExerciseModel.MuscleGroups.Chest), 
+                new ExerciseModel("BC", "Bicep curls", ExerciseModel.MuscleGroups.Biceps),
+                new ExerciseModel("LU", "Lunges", ExerciseModel.MuscleGroups.Quads),
+                new ExerciseModel("TRE", "Triceps rope extensions", ExerciseModel.MuscleGroups.Triceps)
+            };
             this.WorkoutsThisMonth = 5;
             this.WorkoutsBehindSchedule = 2;
         }
@@ -42,7 +54,7 @@ namespace Liftit.DataModel
             LoadTestData();
         }
 
-        public void AddWorkout(string workoutName, DateTime workoutDate, string location, List<ExerciseModel> finishedExercises)
+        public void AddWorkout(string workoutName, DateTime workoutDate, string location, List<FinishedExerciseModel> finishedExercises)
         {
             this.TrackedWorkouts.Add(new WorkoutModel(workoutName, workoutDate, location, finishedExercises));
             this.WorkoutsByWeek = GroupWorkoutsByWeek(this.TrackedWorkouts);
@@ -68,10 +80,11 @@ namespace Liftit.DataModel
             return workouts;
         }
 
+        //TODO: fix start of week, it doesn't work correctly. Add timezone support!
         private string GetWeekFromDate(DateTime dateTime)
         {
             var day = dateTime.Day;
-            var dayOfWeek = (int)dateTime.DayOfWeek - 1;
+            var dayOfWeek = (int)dateTime.DayOfWeek;
             var startOfWeek = dateTime.AddDays(-dayOfWeek);
             var endOfWeek = startOfWeek.AddDays(7);
             return String.Format("Week {0} to {1}", startOfWeek.ToString("dd.MM"), endOfWeek.ToString("dd.MM"));
@@ -81,24 +94,25 @@ namespace Liftit.DataModel
         {
             // Create user
             this.User = new UserModel("Divic", 92, "kg", 4);
+            
             // create personal records
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("SQ", "Squat", new DateTime(2014, 5, 12), 100, 5));
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("DL", "Deadlift", new DateTime(2014, 5, 30), 135, 5));
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("BP", "Bench press", new DateTime(2014, 10, 23), 100, 2));
 
             //create exercises
-            ExerciseModel exerciseOne = new ExerciseModel("SQ", "Squat", ExerciseModel.MuscleGroups.Quads, new List<ExerciseSetModel> { new ExerciseSetModel(90, 5), new ExerciseSetModel(110, 3) });
-            ExerciseModel exerciseTwo = new ExerciseModel("OHP", "Overhead press", ExerciseModel.MuscleGroups.Shoulders, new List<ExerciseSetModel> { new ExerciseSetModel(50, 5), new ExerciseSetModel(55, 5) });
-            ExerciseModel exerciseThree = new ExerciseModel("DL", "Deadlift", ExerciseModel.MuscleGroups.Back, new List<ExerciseSetModel> { new ExerciseSetModel(110, 5), new ExerciseSetModel(135, 5) });
-            ExerciseModel exerciseFour = new ExerciseModel("BP", "Bench press", ExerciseModel.MuscleGroups.Chest, new List<ExerciseSetModel> { new ExerciseSetModel(80, 5), new ExerciseSetModel(90, 3) });
-            ExerciseModel exerciseFive = new ExerciseModel("BC", "Bicep curl", ExerciseModel.MuscleGroups.Biceps, new List<ExerciseSetModel> { new ExerciseSetModel(20, 8), new ExerciseSetModel(20, 5) });
-            ExerciseModel exerciseSix = new ExerciseModel("BC", "Bicep curl", ExerciseModel.MuscleGroups.Biceps, new List<ExerciseSetModel> { new ExerciseSetModel(20, 8), new ExerciseSetModel(20, 5) });
-            ExerciseModel exerciseSeven = new ExerciseModel("BC", "Bicep curl", ExerciseModel.MuscleGroups.Biceps, new List<ExerciseSetModel> { new ExerciseSetModel(20, 8), new ExerciseSetModel(20, 5) });
-            ExerciseModel exerciseEight = new ExerciseModel("BC", "Bicep curl", ExerciseModel.MuscleGroups.Biceps, new List<ExerciseSetModel> { new ExerciseSetModel(20, 8), new ExerciseSetModel(20, 5) });
+            FinishedExerciseModel exerciseOne = new FinishedExerciseModel("SQ", "Squat", ExerciseModel.MuscleGroups.Quads, new List<ExerciseSetModel> { new ExerciseSetModel(90, 5), new ExerciseSetModel(110, 3) });
+            FinishedExerciseModel exerciseTwo = new FinishedExerciseModel("OHP", "Overhead press", ExerciseModel.MuscleGroups.Shoulders, new List<ExerciseSetModel> { new ExerciseSetModel(50, 5), new ExerciseSetModel(55, 5) });
+            FinishedExerciseModel exerciseThree = new FinishedExerciseModel("DL", "Deadlift", ExerciseModel.MuscleGroups.Back, new List<ExerciseSetModel> { new ExerciseSetModel(110, 5), new ExerciseSetModel(135, 5) });
+            FinishedExerciseModel exerciseFour = new FinishedExerciseModel("BP", "Bench press", ExerciseModel.MuscleGroups.Chest, new List<ExerciseSetModel> { new ExerciseSetModel(80, 5), new ExerciseSetModel(90, 3) });
+            FinishedExerciseModel exerciseFive = new FinishedExerciseModel("BC", "Bicep curl", ExerciseModel.MuscleGroups.Biceps, new List<ExerciseSetModel> { new ExerciseSetModel(20, 8), new ExerciseSetModel(20, 5) });
+            FinishedExerciseModel exerciseSix = new FinishedExerciseModel("BC", "Bicep curl", ExerciseModel.MuscleGroups.Biceps, new List<ExerciseSetModel> { new ExerciseSetModel(20, 8), new ExerciseSetModel(20, 5) });
+            FinishedExerciseModel exerciseSeven = new FinishedExerciseModel("BC", "Bicep curl", ExerciseModel.MuscleGroups.Biceps, new List<ExerciseSetModel> { new ExerciseSetModel(20, 8), new ExerciseSetModel(20, 5) });
+            FinishedExerciseModel exerciseEight = new FinishedExerciseModel("BC", "Bicep curl", ExerciseModel.MuscleGroups.Biceps, new List<ExerciseSetModel> { new ExerciseSetModel(20, 8), new ExerciseSetModel(20, 5) });
 
             // create Workouts
-            this.AddWorkout("Cucanj ludnica", new DateTime(2014, 5, 12), "Titan gym", new List<ExerciseModel> { exerciseOne, exerciseTwo, exerciseFive, exerciseSix, exerciseSeven, exerciseEight });
-            this.AddWorkout("Pokidao mrtvo", new DateTime(2014, 5, 30), "Titan gym", new List<ExerciseModel> { exerciseThree, exerciseFour });
+            this.AddWorkout("Cucanj ludnica", new DateTime(2014, 5, 12), "Titan gym", new List<FinishedExerciseModel> { exerciseOne, exerciseTwo, exerciseFive, exerciseSix, exerciseSeven, exerciseEight });
+            this.AddWorkout("Pokidao mrtvo", new DateTime(2014, 5, 30), "Titan gym", new List<FinishedExerciseModel> { exerciseThree, exerciseFour });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -135,7 +149,7 @@ namespace Liftit.DataModel
     }
 
     /// <summary>
-    /// Data about one execise
+    /// Data about one exercise
     /// </summary>
     public class ExerciseModel
     {
@@ -164,17 +178,16 @@ namespace Liftit.DataModel
         }
 
         public string ExerciseId { get; set; }
-        public string ExerciseFullName { get; set; }
+        public string ExerciseName { get; set; }
         public MuscleGroups PrimaryMuscleGroup { get; set; }
         public string PrimaryMuscleGroupName { get; set; }
-        public List<ExerciseSetModel> Sets { get; set; }
 
-        public ExerciseModel(string exerciseId, string fullName, MuscleGroups muscleGroup, List<ExerciseSetModel> sets)
+        public ExerciseModel(string exerciseId, string fullName, MuscleGroups muscleGroup)
         {
             this.ExerciseId = exerciseId;
-            this.ExerciseFullName = fullName;
+            this.ExerciseName = fullName;
             this.PrimaryMuscleGroup = muscleGroup;
-            this.Sets = sets;
+            
 
             this.MuscleGroupNames = new Dictionary<MuscleGroups, string>()
             {
@@ -196,6 +209,23 @@ namespace Liftit.DataModel
             };
 
             this.PrimaryMuscleGroupName = this.MuscleGroupNames[this.PrimaryMuscleGroup];
+        }
+
+        public ExerciseModel(ExerciseModel other) : this(other.ExerciseId, other.ExerciseName, other.PrimaryMuscleGroup) { }
+    }
+
+    public class FinishedExerciseModel : ExerciseModel
+    {
+        public List<ExerciseSetModel> Sets { get; set; }
+       
+        public FinishedExerciseModel(string exerciseId, string fullName, MuscleGroups muscleGroup, List<ExerciseSetModel> sets) : base(exerciseId, fullName, muscleGroup)
+        {
+            this.Sets = sets;
+        }
+
+        public FinishedExerciseModel(ExerciseModel exercise, List<ExerciseSetModel> sets) : base(exercise)
+        {
+            this.Sets = sets;
         }
     }
 
@@ -237,11 +267,11 @@ namespace Liftit.DataModel
         public string WorkoutName { get; set; }
         public DateTime WorkoutDate { get; set; }
         public string WorkoutLocation { get; set; }
-        public List<ExerciseModel> WorkoutFinishedExercises { get; set; }
+        public List<FinishedExerciseModel> WorkoutFinishedExercises { get; set; }
 
         public List<string> WorkoutMuscleGroups { get; set; }
 
-        public WorkoutModel(string workoutName, DateTime date, string location, List<ExerciseModel> exercises)
+        public WorkoutModel(string workoutName, DateTime date, string location, List<FinishedExerciseModel> exercises)
         {
             this.WorkoutName = workoutName;
             this.WorkoutDate = date;
