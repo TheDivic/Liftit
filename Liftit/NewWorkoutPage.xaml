@@ -31,8 +31,8 @@
             <TextBlock Text="track a workout" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
         </StackPanel>
 
-        <!--TODO: Content should be placed within the following grid-->
         <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0" DataContext="{Binding appData}">
+            <ScrollViewer>
             <StackPanel>
                 <TextBlock FontSize="24">I did this workout on:</TextBlock>
                 <DatePicker x:Name="WorkoutDate"></DatePicker>
@@ -50,6 +50,7 @@
                     <Button Margin="10, 0, 0 ,0" Content="Clear workout"/>
                 </StackPanel>
             </StackPanel>
+            </ScrollViewer>
         </Grid>
     </Grid>
 </Page>

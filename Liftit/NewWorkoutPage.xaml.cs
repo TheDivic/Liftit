@@ -18,13 +18,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
-
 namespace Liftit
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class NewWorkoutPage : Page
     {
         private NavigationHelper navigationHelper;
@@ -41,66 +36,27 @@ namespace Liftit
             this.appData = (App.Current as App).appData;
         }
 
-        /// <summary>
-        /// Gets the <see cref="NavigationHelper"/> associated with this <see cref="Page"/>.
-        /// </summary>
         public NavigationHelper NavigationHelper
         {
             get { return this.navigationHelper; }
         }
 
-        /// <summary>
-        /// Gets the view model for this <see cref="Page"/>.
-        /// This can be changed to a strongly typed view model.
-        /// </summary>
         public ObservableDictionary DefaultViewModel
         {
             get { return this.defaultViewModel; }
         }
 
-        /// <summary>
-        /// Populates the page with content passed during navigation.  Any saved state is also
-        /// provided when recreating a page from a prior session.
-        /// </summary>
-        /// <param name="sender">
-        /// The source of the event; typically <see cref="NavigationHelper"/>
-        /// </param>
-        /// <param name="e">Event data that provides both the navigation parameter passed to
-        /// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested and
-        /// a dictionary of state preserved by this page during an earlier
-        /// session.  The state will be null the first time a page is visited.</param>
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             this.DefaultViewModel["appData"] = appData;
         }
 
-        /// <summary>
-        /// Preserves state associated with this page in case the application is suspended or the
-        /// page is discarded from the navigation cache.  Values must conform to the serialization
-        /// requirements of <see cref="SuspensionManager.SessionState"/>.
-        /// </summary>
-        /// <param name="sender">The source of the event; typically <see cref="NavigationHelper"/></param>
-        /// <param name="e">Event data that provides an empty dictionary to be populated with
-        /// serializable state.</param>
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
         }
 
         #region NavigationHelper registration
 
-        /// <summary>
-        /// The methods provided in this section are simply used to allow
-        /// NavigationHelper to respond to the page's navigation methods.
-        /// <para>
-        /// Page specific logic should be placed in event handlers for the  
-        /// <see cref="NavigationHelper.LoadState"/>
-        /// and <see cref="NavigationHelper.SaveState"/>.
-        /// The navigation parameter is available in the LoadState method 
-        /// in addition to page state preserved during an earlier session.
-        /// </para>
-        /// </summary>
-        /// <param name="e">Provides data for navigation methods and event
-        /// handlers that cannot cancel the navigation request.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             this.navigationHelper.OnNavigatedTo(e);
@@ -114,6 +70,9 @@ namespace Liftit
         #endregion
 
         // TODO: add validation for user input
+        /// <summary>
+        /// Saves the tracked workout to the model
+        /// </summary>
         private void SaveWorkoutButton_Click(object sender, RoutedEventArgs e)
         {
             List<FinishedExerciseModel> finishedExercises = new List<FinishedExerciseModel>();
@@ -131,30 +90,121 @@ namespace Liftit
             Frame.Navigate(typeof(PivotPage));
         }
 
+
+        public StackPanel SetsPanel { get; private set; }
+        public StackPanel SetsListPanel { get; private set; }
+
+        /// <summary>
+        /// Adds a new exercise to the FinishedExercisesPanel
+        /// </summary>
         private void AddExerciseButton_Click(object sender, RoutedEventArgs e)
         {
-            StackPanel newExercisePanel = new StackPanel();
-            newExercisePanel.Orientation = Orientation.Horizontal;
-            newExercisePanel.HorizontalAlignment = HorizontalAlignment.Stretch;
 
-            int exerciseNumber = FinishedExercisesPanel.Children.Count + 1;
-            TextBlock numberTextBlock = new TextBlock();
-            numberTextBlock.FontSize = 30;
-            numberTextBlock.Text = exerciseNumber + ". ";
-            numberTextBlock.Margin = new Thickness(0, 10, 10, 0);
-            newExercisePanel.Children.Add(numberTextBlock);
+            StackPanel newExercisePanel = new StackPanel();
+            newExercisePanel.HorizontalAlignment = HorizontalAlignment.Stretch;
+            newExercisePanel.Margin = new Thickness(0, 0, 0, 10);
 
             ComboBox exerciseNamesComboBox = new ComboBox();
             exerciseNamesComboBox.ItemsSource = appData.KnownExercises;
             object comboItemTemplateObject;
             this.Resources.TryGetValue("ComboItemTemplate", out comboItemTemplateObject);
             exerciseNamesComboBox.ItemTemplate = (DataTemplate)comboItemTemplateObject;
-
-            exerciseNamesComboBox.Margin = new Thickness(0,0,0,0);
-
+            exerciseNamesComboBox.PlaceholderText = "Tap to choose an exercise";
+            exerciseNamesComboBox.SelectionChanged += new SelectionChangedEventHandler(ExerciseNamesComboBox_SelectionChanged);
+            exerciseNamesComboBox.Margin = new Thickness(0, 0, 0, 0);
             newExercisePanel.Children.Add(exerciseNamesComboBox);
 
+            SetsPanel = new StackPanel();
+            newExercisePanel.Children.Add(SetsPanel);
+
             FinishedExercisesPanel.Children.Add(newExercisePanel);
+        }
+
+        /// <summary>
+        /// Display the form for entering the sets when the exercise name is chosen
+        /// </summary>
+        private void ExerciseNamesComboBox_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            if (SetsPanel != null && SetsPanel.Children.Count == 0)
+            {
+                TextBlock setsHeader = new TextBlock();
+                setsHeader.Text = "My sets:";
+                setsHeader.FontSize = 24;
+                SetsPanel.Children.Add(setsHeader);
+
+                SetsListPanel = new StackPanel();
+                SetsPanel.Children.Add(SetsListPanel);
+
+                SetsListPanel.Children.Add(CreateOneSetStackPanel());
+
+                Button newSetButton = new Button();
+                newSetButton.Content = "Add a set";
+                newSetButton.Click += new RoutedEventHandler(newSetButton_Click);
+
+                SetsPanel.Children.Add(newSetButton);
+            }
+        }
+
+        private void newSetButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (SetsListPanel != null)
+            {
+                SetsListPanel.Children.Add(CreateOneSetStackPanel());
+            }
+        }
+
+        private StackPanel CreateOneSetStackPanel()
+        {
+            StackPanel oneSetStackPanel = new StackPanel();
+            oneSetStackPanel.Orientation = Orientation.Horizontal;
+
+            int setNumber = SetsListPanel.Children.Count + 1;
+            TextBlock setNumberTextBlock = new TextBlock();
+            setNumberTextBlock.FontSize = 24;
+            setNumberTextBlock.Text = setNumber + ". ";
+            setNumberTextBlock.Margin = new Thickness(0, 15, 5, 0);
+            oneSetStackPanel.Children.Add(setNumberTextBlock);
+
+            InputScope repsScope = new InputScope();
+            InputScopeName numberScopeName = new InputScopeName();
+            numberScopeName.NameValue = InputScopeNameValue.Number;
+            repsScope.Names.Add(numberScopeName);
+
+            TextBox repsTextBox = new TextBox();
+            repsTextBox.InputScope = repsScope;
+            repsTextBox.PlaceholderText = "reps";
+            oneSetStackPanel.Children.Add(repsTextBox);
+
+            TextBlock timesText = new TextBlock();
+            timesText.FontSize = 24;
+            timesText.Margin = new Thickness(5, 15, 5, 0);
+            timesText.Text = "times";
+            oneSetStackPanel.Children.Add(timesText);
+
+            InputScope weightScope = new InputScope();
+            InputScopeName weightScopeName = new InputScopeName();
+            weightScopeName.NameValue = InputScopeNameValue.Number;
+            weightScope.Names.Add(weightScopeName);
+
+            TextBox weightTextBox = new TextBox();
+            weightTextBox.InputScope = weightScope;
+            weightTextBox.PlaceholderText = "weight";
+            oneSetStackPanel.Children.Add(weightTextBox);
+
+            Button deleteSetButton = new Button();
+            deleteSetButton.Content = "delete";
+            deleteSetButton.Margin = new Thickness(5, 0, 0, 0);
+            deleteSetButton.Click += deleteSetButton_Click;
+            oneSetStackPanel.Children.Add(deleteSetButton);
+
+            return oneSetStackPanel;
+        }
+
+        void deleteSetButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+            var setPanel = (StackPanel)button.Parent;
+            SetsListPanel.Children.Remove(setPanel);
         }
 
     }

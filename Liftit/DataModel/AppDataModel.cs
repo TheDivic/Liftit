@@ -7,21 +7,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Liftit.Common;
 
-// TODO: REFACTOR and add coments to code!
 namespace Liftit.DataModel
 {
     /// <summary>
-    /// All the data needed for the app
+    /// The data model for the application
     /// </summary>
     public class AppDataModel : INotifyPropertyChanged
     {
         public UserModel User { get; private set; }
-        public ObservableCollection<WorkoutModel> TrackedWorkouts
-        {
-            get;
-            private set;
-        }
-
+        public ObservableCollection<WorkoutModel> TrackedWorkouts { get; private set; }
+        // Workouts grouped by week
         public Dictionary<string, List<WorkoutModel>> WorkoutsByWeek { get; private set; }
         public ObservableCollection<ExerciseModel> KnownExercises {get; private set; }
         
@@ -34,7 +29,6 @@ namespace Liftit.DataModel
             this.User = new UserModel("Anonymous", 0, "nil", 0);
             this.TrackedWorkouts = new ObservableCollection<WorkoutModel>();
             this.WorkoutsByWeek = new Dictionary<string,List<WorkoutModel>>();
-            // "Deadlift", "Overhead press", "Lunges", "Bench press", "Biceps curl", "Triceps rope extension", "Lat pulldowns"
             this.KnownExercises = new ObservableCollection<ExerciseModel>() 
             { 
                 new ExerciseModel("SQ", "Squat", ExerciseModel.MuscleGroups.Quads),
@@ -54,47 +48,11 @@ namespace Liftit.DataModel
             LoadTestData();
         }
 
-        public void AddWorkout(string workoutName, DateTime workoutDate, string location, List<FinishedExerciseModel> finishedExercises)
-        {
-            this.TrackedWorkouts.Add(new WorkoutModel(workoutName, workoutDate, location, finishedExercises));
-            this.WorkoutsByWeek = GroupWorkoutsByWeek(this.TrackedWorkouts);
-            OnPropertyChanged("WorkoutsByWeek");
-        }
-
-        private Dictionary<string, List<WorkoutModel>> GroupWorkoutsByWeek(ObservableCollection<WorkoutModel> workoutsModel)
-        {
-            var workoutsByWeekQuery = workoutsModel.Select(workout => new { Week = GetWeekFromDate(workout.WorkoutDate), Workout = workout });
-
-            var workouts = new Dictionary<string, List<WorkoutModel>>();
-            foreach (var workoutPair in workoutsByWeekQuery)
-            {
-                if (workouts.ContainsKey(workoutPair.Week))
-                {
-                    workouts[workoutPair.Week].Add(workoutPair.Workout);
-                }
-                else
-                {
-                    workouts.Add(workoutPair.Week, new List<WorkoutModel>() { workoutPair.Workout });
-                }
-            }
-            return workouts;
-        }
-
-        //TODO: fix start of week, it doesn't work correctly. Add timezone support!
-        private string GetWeekFromDate(DateTime dateTime)
-        {
-            var day = dateTime.Day;
-            var dayOfWeek = (int)dateTime.DayOfWeek;
-            var startOfWeek = dateTime.AddDays(-dayOfWeek);
-            var endOfWeek = startOfWeek.AddDays(7);
-            return String.Format("Week {0} to {1}", startOfWeek.ToString("dd.MM"), endOfWeek.ToString("dd.MM"));
-        }
-
         private void LoadTestData()
         {
             // Create user
             this.User = new UserModel("Divic", 92, "kg", 4);
-            
+
             // create personal records
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("SQ", "Squat", new DateTime(2014, 5, 12), 100, 5));
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("DL", "Deadlift", new DateTime(2014, 5, 30), 135, 5));
@@ -115,6 +73,44 @@ namespace Liftit.DataModel
             this.AddWorkout("Pokidao mrtvo", new DateTime(2014, 5, 30), "Titan gym", new List<FinishedExerciseModel> { exerciseThree, exerciseFour });
         }
 
+        /// <summary>
+        /// Adds a new workout, regroups the workouts by week and raises the propertyChanged event
+        /// </summary>
+        public void AddWorkout(string workoutName, DateTime workoutDate, string location, List<FinishedExerciseModel> finishedExercises)
+        {
+            this.TrackedWorkouts.Add(new WorkoutModel(workoutName, workoutDate, location, finishedExercises));
+            this.WorkoutsByWeek = GroupWorkoutsByWeek(this.TrackedWorkouts);
+            OnPropertyChanged("WorkoutsByWeek");
+        }
+
+        /// <summary>
+        /// Groups the tracked workouts by week, because that's the way I want to display them to the user
+        /// (LINQ MAGIC)
+        /// </summary>
+        private Dictionary<string, List<WorkoutModel>> GroupWorkoutsByWeek(ObservableCollection<WorkoutModel> workoutsModel)
+        {
+            // First I group the workouts by week using the GetWeekFromDate method to form the date string
+            var groupByWeek = workoutsModel.Select(workout => new { Week = GetWeekFromDate(workout.WorkoutDate), Workout = workout }).GroupBy(x => x.Week);
+            // Then I make the dictionary
+            return groupByWeek.ToDictionary(x => x.Key, x => x.Select(y => y.Workout).ToList()); ;
+        }
+
+        //TODO: fix start of week, it doesn't work correctly. Add timezone support!
+        /// <summary>
+        // A method that takes a DateTime and outputs a string representing the week of that date
+        // in the following format: "Week dd.MM to dd.MM"
+        // for example: Week 09.03 to 15.03
+        /// </summary>
+        private string GetWeekFromDate(DateTime dateTime)
+        {
+            var day = dateTime.Day;
+            var dayOfWeek = (int)dateTime.DayOfWeek;
+            var startOfWeek = dateTime.AddDays(-dayOfWeek);
+            var endOfWeek = startOfWeek.AddDays(7);
+            return String.Format("Week {0} to {1}", startOfWeek.ToString("dd.MM"), endOfWeek.ToString("dd.MM"));
+        }
+
+        #region PropertyChanged stuff
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(string name)
@@ -125,6 +121,7 @@ namespace Liftit.DataModel
                 handler(this, new PropertyChangedEventArgs(name));
             }
         }
+        #endregion
     }
 
     /// <summary>
@@ -214,6 +211,9 @@ namespace Liftit.DataModel
         public ExerciseModel(ExerciseModel other) : this(other.ExerciseId, other.ExerciseName, other.PrimaryMuscleGroup) { }
     }
 
+    /// <summary>
+    /// A finished exercise contains the data about the exercise and the data about the finished sets
+    /// </summary>
     public class FinishedExerciseModel : ExerciseModel
     {
         public List<ExerciseSetModel> Sets { get; set; }
