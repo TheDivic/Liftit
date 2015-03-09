@@ -41,7 +41,7 @@
                 <TextBlock FontSize="20" Text="{Binding}" TextWrapping="Wrap"></TextBlock>
             </Grid>
         </DataTemplate>
-        
+
         <DataTemplate x:Key="TrackedWorkoutTemplate">
             <StackPanel Margin="0,10,0,0">
                 <TextBlock FontSize="24" Text="{Binding WorkoutDate}"></TextBlock>
@@ -55,7 +55,7 @@
                 </GridView>
             </StackPanel>
         </DataTemplate>
-        
+
         <DataTemplate x:Key="WeekTemplate">
             <StackPanel>
                 <!-- Week identifer -->
@@ -101,8 +101,10 @@
                 x:Uid="WorkoutsPivotItem"
                 Margin="19,14.5,0,0"
                 Header="workouts">
-                <ListView ItemsSource="{Binding WorkoutsByWeek}" ItemTemplate="{StaticResource WeekTemplate}">
-                </ListView>
+                <ScrollViewer>
+                    <ListView ItemsSource="{Binding WorkoutsByWeek}" ItemTemplate="{StaticResource WeekTemplate}">
+                    </ListView>
+                </ScrollViewer>
             </PivotItem>
         </Pivot>
     </Grid>

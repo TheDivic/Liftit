@@ -99,7 +99,6 @@ namespace Liftit
         /// </summary>
         private void AddExerciseButton_Click(object sender, RoutedEventArgs e)
         {
-
             StackPanel newExercisePanel = new StackPanel();
             newExercisePanel.HorizontalAlignment = HorizontalAlignment.Stretch;
             newExercisePanel.Margin = new Thickness(0, 0, 0, 10);
@@ -120,6 +119,7 @@ namespace Liftit
             FinishedExercisesPanel.Children.Add(newExercisePanel);
         }
 
+        //TODO: fix setsPanel positioning
         /// <summary>
         /// Display the form for entering the sets when the exercise name is chosen
         /// </summary>
@@ -207,5 +207,10 @@ namespace Liftit
             SetsListPanel.Children.Remove(setPanel);
         }
 
+        private void NextButton_Click(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Flip");
+            
+        }
     }
 }

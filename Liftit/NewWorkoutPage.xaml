@@ -11,7 +11,13 @@
             <TextBlock Text="{Binding ExerciseName}"></TextBlock>
         </DataTemplate>
     </Page.Resources>
-    
+    <Page.BottomAppBar>
+        <CommandBar>
+            <AppBarButton Label="Save" Icon="Save" Click="SaveWorkoutButton_Click"/>
+            <AppBarButton Icon="Cancel" Label="Clear"/>
+        </CommandBar>
+    </Page.BottomAppBar>
+
     <Grid x:Name="LayoutRoot">
 
         <Grid.ChildrenTransitions>
@@ -32,25 +38,38 @@
         </StackPanel>
 
         <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0" DataContext="{Binding appData}">
-            <ScrollViewer>
-            <StackPanel>
-                <TextBlock FontSize="24">I did this workout on:</TextBlock>
-                <DatePicker x:Name="WorkoutDate"></DatePicker>
-                <TextBlock FontSize="24">I did it at:</TextBlock>
-                <TextBox x:Name="WorkoutLocation" PlaceholderText="Name of your gym"></TextBox>
-                <TextBlock TextWrapping="Wrap" FontSize="24">My short note about this workout:</TextBlock>
-                <TextBox x:Name="WorkoutName" MaxLength="50" PlaceholderText="Max 50 characters"></TextBox>
-                <TextBlock TextWrapping="Wrap" FontSize="24">I did these exercises:</TextBlock>
-                <StackPanel x:Name="FinishedExercisesPanel"></StackPanel>
-                <Button x:Name="AddExerciseButton" Click="AddExerciseButton_Click">Click to add an exercise</Button>
-                
-                <!-- TODO: Make these command bar buttons with icons -->
-                <StackPanel Orientation="Horizontal">
-                    <Button x:Name="SaveWorkoutButton" Click="SaveWorkoutButton_Click" Content="Save workout" />
-                    <Button Margin="10, 0, 0 ,0" Content="Clear workout"/>
-                </StackPanel>
-            </StackPanel>
-            </ScrollViewer>
+            <FlipView x:Name="TrackWorkoutFlipView">
+                <FlipViewItem>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="7*"></RowDefinition>
+                            <RowDefinition Height="1*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <ScrollViewer>
+                            <StackPanel Grid.Row="0">
+                                <TextBlock FontSize="24">I did this workout on:</TextBlock>
+                                <DatePicker x:Name="WorkoutDate"></DatePicker>
+                                <TextBlock FontSize="24">I did it at:</TextBlock>
+                                <TextBox x:Name="WorkoutLocation" PlaceholderText="Name of your gym"></TextBox>
+                                <TextBlock TextWrapping="Wrap" FontSize="24">My short note about this workout:</TextBlock>
+                                <TextBox x:Name="WorkoutName" MaxLength="50" PlaceholderText="Max 50 characters"></TextBox>
+                            </StackPanel>
+                        </ScrollViewer>
+                        <StackPanel Grid.Row="1">
+                            <TextBlock Foreground="Gray" FontSize="24" HorizontalAlignment="Center">Swipe right when finished</TextBlock>
+                        </StackPanel>
+                    </Grid>
+                </FlipViewItem>
+                <FlipViewItem>
+                    <ScrollViewer>
+                        <StackPanel>
+                            <TextBlock TextWrapping="Wrap" FontSize="24">I did these exercises:</TextBlock>
+                            <StackPanel x:Name="FinishedExercisesPanel"></StackPanel>
+                            <Button x:Name="AddExerciseButton" Click="AddExerciseButton_Click">Click to add an exercise</Button>
+                        </StackPanel>
+                    </ScrollViewer>
+                </FlipViewItem>
+            </FlipView>
         </Grid>
     </Grid>
 </Page>
