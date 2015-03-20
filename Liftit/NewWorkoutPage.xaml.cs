@@ -90,16 +90,12 @@ namespace Liftit
             Frame.Navigate(typeof(PivotPage));
         }
 
-
-        public StackPanel SetsPanel { get; private set; }
-        public StackPanel SetsListPanel { get; private set; }
-
         /// <summary>
         /// Adds a new exercise to the FinishedExercisesPanel
         /// </summary>
         private void AddExerciseButton_Click(object sender, RoutedEventArgs e)
         {
-            StackPanel newExercisePanel = new StackPanel();
+            var newExercisePanel = new StackPanel();
             newExercisePanel.HorizontalAlignment = HorizontalAlignment.Stretch;
             newExercisePanel.Margin = new Thickness(0, 0, 0, 10);
 
@@ -113,8 +109,9 @@ namespace Liftit
             exerciseNamesComboBox.Margin = new Thickness(0, 0, 0, 0);
             newExercisePanel.Children.Add(exerciseNamesComboBox);
 
-            SetsPanel = new StackPanel();
-            newExercisePanel.Children.Add(SetsPanel);
+            var setsPanel = new StackPanel();
+            setsPanel.Tag = "SetsPanel";
+            newExercisePanel.Children.Add(setsPanel);
 
             FinishedExercisesPanel.Children.Add(newExercisePanel);
         }
@@ -125,6 +122,15 @@ namespace Liftit
         /// </summary>
         private void ExerciseNamesComboBox_SelectionChanged(object sender, RoutedEventArgs e)
         {
+            ComboBox senderBox = (ComboBox)sender;
+            StackPanel parentPanel = (StackPanel)senderBox.Parent;
+
+            StackPanel SetsPanel;
+
+            // find the set list panel if it exists
+            var panelChildren = parentPanel.Children.OfType<StackPanel>();
+            SetsPanel = panelChildren.Where(panel=>panel.Tag == "SetsPanel").FirstOrDefault();
+
             if (SetsPanel != null && SetsPanel.Children.Count == 0)
             {
                 TextBlock setsHeader = new TextBlock();
@@ -132,10 +138,10 @@ namespace Liftit
                 setsHeader.FontSize = 24;
                 SetsPanel.Children.Add(setsHeader);
 
-                SetsListPanel = new StackPanel();
+                var SetsListPanel = new StackPanel();
                 SetsPanel.Children.Add(SetsListPanel);
 
-                SetsListPanel.Children.Add(CreateOneSetStackPanel());
+                SetsListPanel.Children.Add(CreateOneSetStackPanel(0));
 
                 Button newSetButton = new Button();
                 newSetButton.Content = "Add a set";
@@ -147,18 +153,23 @@ namespace Liftit
 
         private void newSetButton_Click(object sender, RoutedEventArgs e)
         {
+            StackPanel SetsListPanel;
+            StackPanel SetsPanel = (StackPanel)((Button)sender).Parent;
+
+            SetsListPanel = SetsPanel.Children.OfType<StackPanel>().FirstOrDefault();
+
             if (SetsListPanel != null)
             {
-                SetsListPanel.Children.Add(CreateOneSetStackPanel());
+                SetsListPanel.Children.Add(CreateOneSetStackPanel(SetsListPanel.Children.Count));
             }
         }
 
-        private StackPanel CreateOneSetStackPanel()
+        private StackPanel CreateOneSetStackPanel(int panelIndex)
         {
             StackPanel oneSetStackPanel = new StackPanel();
             oneSetStackPanel.Orientation = Orientation.Horizontal;
 
-            int setNumber = SetsListPanel.Children.Count + 1;
+            int setNumber = panelIndex;
             TextBlock setNumberTextBlock = new TextBlock();
             setNumberTextBlock.FontSize = 24;
             setNumberTextBlock.Text = setNumber + ". ";
@@ -204,6 +215,7 @@ namespace Liftit
         {
             var button = (Button)sender;
             var setPanel = (StackPanel)button.Parent;
+            var SetsListPanel = (StackPanel)setPanel.Parent;
             SetsListPanel.Children.Remove(setPanel);
         }
 
