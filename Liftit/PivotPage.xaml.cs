@@ -3,6 +3,7 @@ using Liftit.DataModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -81,6 +82,12 @@ namespace Liftit
         private void AddAppBarButton_Click(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(NewWorkoutPage));
+        }
+
+        private void StackPanel_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            StackPanel senderPanel = (StackPanel)sender;
+            Frame.Navigate(typeof(FinishedWorkoutPage), senderPanel.DataContext);
         }
     }
 }

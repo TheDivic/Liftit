@@ -1,0 +1,47 @@
+﻿<Page
+    x:Class="Liftit.FinishedWorkoutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Liftit"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}">
+
+    <Page.Resources>
+        <DataTemplate x:Key="ExerciseTemplate">
+            <StackPanel>
+                <TextBlock FontSize="24" Text="{Binding ExerciseName}"></TextBlock>
+            </StackPanel>
+        </DataTemplate>
+    </Page.Resources>
+    <Grid x:Name="LayoutRoot" DataContext="{Binding currentWorkout}">
+
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title Panel -->
+        <StackPanel Grid.Row="0" Margin="19,0,0,0">
+            <TextBlock Text="Liftit - an app for real strength training" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0"/>
+            <TextBlock Text="{Binding WorkoutDate}" TextWrapping="Wrap" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}"/>
+        </StackPanel>
+        <!-- Content panel -->
+        <StackPanel Grid.Row="1" Margin="19,0,0,0">
+            <TextBlock FontSize="24" Foreground="Gray">I did this workout at:</TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" Text="{Binding WorkoutLocation}" FontSize="24"></TextBlock>
+            <TextBlock FontSize="24" Foreground="Gray">Note to myself:</TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" Text="{Binding WorkoutName}" FontSize="24"></TextBlock>
+            <TextBlock FontSize="24" Foreground="Gray">I did these exercises:</TextBlock>
+            <ListView ItemsSource="{Binding WorkoutFinishedExercises}" ItemTemplate="{StaticResource ExerciseTemplate}"></ListView>
+        </StackPanel>
+    </Grid>
+</Page>

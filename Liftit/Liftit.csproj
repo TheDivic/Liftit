@@ -80,6 +80,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <Page Include="FinishedWorkoutPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="NewWorkoutPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -98,6 +102,9 @@
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="DataModel\AppDataModel.cs" />
+    <Compile Include="FinishedWorkoutPage.xaml.cs">
+      <DependentUpon>FinishedWorkoutPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NewWorkoutPage.xaml.cs">
       <DependentUpon>NewWorkoutPage.xaml</DependentUpon>
     </Compile>

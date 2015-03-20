@@ -43,7 +43,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="TrackedWorkoutTemplate">
-            <StackPanel Margin="0,10,0,0">
+            <StackPanel Margin="0,10,0,0" Tapped="StackPanel_Tapped">
                 <TextBlock FontSize="24" Text="{Binding WorkoutDate}"></TextBlock>
                 <TextBlock FontSize="24" Text="{Binding WorkoutName}"></TextBlock>
                 <GridView ItemsSource="{Binding WorkoutMuscleGroups}" ItemTemplate="{StaticResource WorkoutMuscleGroup}">

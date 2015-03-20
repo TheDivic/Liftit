@@ -129,7 +129,7 @@ namespace Liftit
 
             // find the set list panel if it exists
             var panelChildren = parentPanel.Children.OfType<StackPanel>();
-            SetsPanel = panelChildren.Where(panel=>panel.Tag == "SetsPanel").FirstOrDefault();
+            SetsPanel = panelChildren.Where(panel=>(string)panel.Tag == "SetsPanel").FirstOrDefault();
 
             if (SetsPanel != null && SetsPanel.Children.Count == 0)
             {
