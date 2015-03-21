@@ -69,7 +69,7 @@ namespace Liftit
 
         #endregion
 
-        // TODO: add validation for user input
+        // TODO: add validation for user input and refactor, check for nulls
         /// <summary>
         /// Saves the tracked workout to the model
         /// </summary>
@@ -80,9 +80,31 @@ namespace Liftit
             foreach (StackPanel sp in FinishedExercisesPanel.Children)
             {
                 var combo = (ComboBox)sp.Children.OfType<ComboBox>().FirstOrDefault();
+                StackPanel SetsPanel;
+
+                // find the set list panel if it exists
+                var panelChildren = sp.Children.OfType<StackPanel>();
+                SetsPanel = panelChildren.Where(panel => (string)panel.Tag == "SetsPanel").FirstOrDefault();
+                var SetsListPanel = SetsPanel.Children.OfType<StackPanel>().FirstOrDefault();
+
+                var finishedSets = new List<ExerciseSetModel>();
+                // todo: probably slow, optimize if necessary
+                foreach(var setPanel in SetsListPanel.Children.OfType<StackPanel>()){
+                    TextBox repsTextBox = setPanel.Children.OfType<TextBox>().Where(x => (string)x.Tag == "Reps").FirstOrDefault();
+                    TextBox weightTextBox = setPanel.Children.OfType<TextBox>().Where(x => (string)x.Tag == "Weight").FirstOrDefault();
+
+                    double parsedWeight;
+                    int parsedReps;
+
+                    if(Double.TryParse(weightTextBox.Text,out parsedWeight) && Int32.TryParse(repsTextBox.Text, out parsedReps)){
+                        finishedSets.Add(new ExerciseSetModel(parsedWeight, parsedReps));
+                    }
+                }
+
                 if (combo != null && combo.SelectedItem != null)
                 {
-                    finishedExercises.Add(new FinishedExerciseModel((ExerciseModel)combo.SelectedItem, new List<ExerciseSetModel>()));
+                    var trackedExercise = (ExerciseModel)combo.SelectedItem;
+                    finishedExercises.Add(new FinishedExerciseModel(trackedExercise, finishedSets));
                 }
             }
 
@@ -182,6 +204,7 @@ namespace Liftit
             repsScope.Names.Add(numberScopeName);
 
             TextBox repsTextBox = new TextBox();
+            repsTextBox.Tag = "Reps";
             repsTextBox.InputScope = repsScope;
             repsTextBox.PlaceholderText = "reps";
             oneSetStackPanel.Children.Add(repsTextBox);
@@ -198,6 +221,7 @@ namespace Liftit
             weightScope.Names.Add(weightScopeName);
 
             TextBox weightTextBox = new TextBox();
+            weightTextBox.Tag = "Weight";
             weightTextBox.InputScope = weightScope;
             weightTextBox.PlaceholderText = "weight";
             oneSetStackPanel.Children.Add(weightTextBox);
