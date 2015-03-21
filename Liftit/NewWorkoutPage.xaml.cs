@@ -99,6 +99,7 @@ namespace Liftit
             newExercisePanel.HorizontalAlignment = HorizontalAlignment.Stretch;
             newExercisePanel.Margin = new Thickness(0, 0, 0, 10);
 
+            // Choose an exercise combo box
             ComboBox exerciseNamesComboBox = new ComboBox();
             exerciseNamesComboBox.ItemsSource = appData.KnownExercises;
             object comboItemTemplateObject;
@@ -116,7 +117,6 @@ namespace Liftit
             FinishedExercisesPanel.Children.Add(newExercisePanel);
         }
 
-        //TODO: fix setsPanel positioning
         /// <summary>
         /// Display the form for entering the sets when the exercise name is chosen
         /// </summary>
@@ -164,12 +164,12 @@ namespace Liftit
             }
         }
 
-        private StackPanel CreateOneSetStackPanel(int panelIndex)
+        private StackPanel CreateOneSetStackPanel(int currentSetNumber)
         {
             StackPanel oneSetStackPanel = new StackPanel();
             oneSetStackPanel.Orientation = Orientation.Horizontal;
 
-            int setNumber = panelIndex;
+            int setNumber = currentSetNumber + 1;
             TextBlock setNumberTextBlock = new TextBlock();
             setNumberTextBlock.FontSize = 24;
             setNumberTextBlock.Text = setNumber + ". ";
@@ -217,12 +217,6 @@ namespace Liftit
             var setPanel = (StackPanel)button.Parent;
             var SetsListPanel = (StackPanel)setPanel.Parent;
             SetsListPanel.Children.Remove(setPanel);
-        }
-
-        private void NextButton_Click(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("Flip");
-            
         }
     }
 }

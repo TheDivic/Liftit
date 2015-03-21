@@ -10,9 +10,14 @@
     DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}">
 
     <Page.Resources>
+        <DataTemplate x:Key="OneSet">
+            <TextBlock FontSize="24" Margin="0,0,0,0"><Run Text="{Binding Reps}"></Run> x <Run Text="{Binding Weight}"></Run>kg</TextBlock>
+        </DataTemplate>
+        
         <DataTemplate x:Key="ExerciseTemplate">
             <StackPanel>
                 <TextBlock FontSize="24" Text="{Binding ExerciseName}"></TextBlock>
+                <ListView ItemsSource="{Binding Sets}" ItemTemplate="{StaticResource OneSet}"></ListView>
             </StackPanel>
         </DataTemplate>
     </Page.Resources>
