@@ -76,7 +76,42 @@ namespace Liftit
         private void SaveWorkoutButton_Click(object sender, RoutedEventArgs e)
         {
             List<FinishedExerciseModel> finishedExercises = new List<FinishedExerciseModel>();
-            
+
+            ParseExercises(finishedExercises);
+
+            Flyout inputError = new Flyout();
+            StackPanel errorPanel = new StackPanel();
+            TextBlock errorText = new TextBlock();
+            errorText.FontSize = 20;
+            errorText.TextWrapping = TextWrapping.Wrap;
+            errorPanel.Children.Add(errorText);
+            inputError.Content = errorPanel;
+
+            if (String.IsNullOrEmpty(WorkoutName.Text))
+            {
+                errorText.Text = "Give a name to your workout before saving.";
+                inputError.ShowAt(ContentRoot);
+                return;
+            }
+            else if (String.IsNullOrEmpty(WorkoutLocation.Text))
+            {
+                errorText.Text = "Enter the location of your workout before saving.";
+                inputError.ShowAt(ContentRoot);
+                return;
+            }
+            else if (finishedExercises.Count == 0)
+            {
+                errorText.Text = "Add some exercises to the workout before saving";
+                inputError.ShowAt(ContentRoot);
+                return;
+            }
+
+            appData.AddWorkout(WorkoutName.Text, WorkoutDate.Date.DateTime, WorkoutLocation.Text, finishedExercises);
+            Frame.Navigate(typeof(PivotPage));
+        }
+
+        private void ParseExercises(List<FinishedExerciseModel> finishedExercises)
+        {
             foreach (StackPanel sp in FinishedExercisesPanel.Children)
             {
                 var combo = (ComboBox)sp.Children.OfType<ComboBox>().FirstOrDefault();
@@ -89,14 +124,16 @@ namespace Liftit
 
                 var finishedSets = new List<ExerciseSetModel>();
                 // todo: probably slow, optimize if necessary
-                foreach(var setPanel in SetsListPanel.Children.OfType<StackPanel>()){
+                foreach (var setPanel in SetsListPanel.Children.OfType<StackPanel>())
+                {
                     TextBox repsTextBox = setPanel.Children.OfType<TextBox>().Where(x => (string)x.Tag == "Reps").FirstOrDefault();
                     TextBox weightTextBox = setPanel.Children.OfType<TextBox>().Where(x => (string)x.Tag == "Weight").FirstOrDefault();
 
                     double parsedWeight;
                     int parsedReps;
 
-                    if(Double.TryParse(weightTextBox.Text,out parsedWeight) && Int32.TryParse(repsTextBox.Text, out parsedReps)){
+                    if (Double.TryParse(weightTextBox.Text, out parsedWeight) && Int32.TryParse(repsTextBox.Text, out parsedReps))
+                    {
                         finishedSets.Add(new ExerciseSetModel(parsedWeight, parsedReps));
                     }
                 }
@@ -107,9 +144,6 @@ namespace Liftit
                     finishedExercises.Add(new FinishedExerciseModel(trackedExercise, finishedSets));
                 }
             }
-
-            appData.AddWorkout(WorkoutName.Text, WorkoutDate.Date.DateTime, WorkoutLocation.Text, finishedExercises);
-            Frame.Navigate(typeof(PivotPage));
         }
 
         /// <summary>
