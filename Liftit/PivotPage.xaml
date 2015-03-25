@@ -83,7 +83,7 @@
                         <TextBlock FontSize="24">Hello, <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding User.Username}"></Run>!</TextBlock>
                         <TextBlock FontSize="24">Your current weight is <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding User.Weight}"></Run><Run Text="{Binding User.WeightUnit}"></Run>.</TextBlock>
                         <TextBlock FontSize="24">You tracked <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding WorkoutsThisMonth}"></Run> workouts this month.</TextBlock>
-                        <TextBlock FontSize="24">You are <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding WorkoutsBehindSchedule}"></Run> workouts behind schedule.</TextBlock>
+                        <TextBlock FontSize="24">You are <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding WorkoutsBehindSchedule}"></Run> workouts behind schedule this month.</TextBlock>
                     </StackPanel>
 
                     <!-- Personal records -->

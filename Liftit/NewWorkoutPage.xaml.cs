@@ -69,7 +69,6 @@ namespace Liftit
 
         #endregion
 
-        // TODO: add validation for user input and refactor, check for nulls
         /// <summary>
         /// Saves the tracked workout to the model
         /// </summary>
@@ -87,15 +86,15 @@ namespace Liftit
             errorPanel.Children.Add(errorText);
             inputError.Content = errorPanel;
 
-            if (String.IsNullOrEmpty(WorkoutName.Text))
+            if (String.IsNullOrEmpty(WorkoutLocation.Text))
             {
-                errorText.Text = "Give a name to your workout before saving.";
+                errorText.Text = "Enter the location of your workout before saving.";
                 inputError.ShowAt(ContentRoot);
                 return;
             }
-            else if (String.IsNullOrEmpty(WorkoutLocation.Text))
+            else if (String.IsNullOrEmpty(WorkoutName.Text))
             {
-                errorText.Text = "Enter the location of your workout before saving.";
+                errorText.Text = "Give a name to your workout before saving.";
                 inputError.ShowAt(ContentRoot);
                 return;
             }

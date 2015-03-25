@@ -20,7 +20,6 @@ namespace Liftit.DataModel
         public Dictionary<string, List<WorkoutModel>> WorkoutsByWeek { get; private set; }
         public ObservableCollection<ExerciseModel> KnownExercises {get; private set; }
         
-        // TODO: Calculate this every time the app is started
         public int WorkoutsThisMonth { get; private set; }
         public int WorkoutsBehindSchedule { get; private set; }
 
@@ -39,13 +38,13 @@ namespace Liftit.DataModel
                 new ExerciseModel("LU", "Lunges", ExerciseModel.MuscleGroups.Quads),
                 new ExerciseModel("TRE", "Triceps rope extensions", ExerciseModel.MuscleGroups.Triceps)
             };
-            this.WorkoutsThisMonth = 5;
-            this.WorkoutsBehindSchedule = 2;
         }
 
         public void LoadDataFromMemory()
         {
             LoadTestData();
+            this.WorkoutsThisMonth = TrackedWorkouts.Where(x => x.WorkoutDate.Year == DateTime.Now.Year && x.WorkoutDate.Month == DateTime.Now.Month).Count() ;
+            this.WorkoutsBehindSchedule = this.User.WorkoutsPerWeek * 4 - this.WorkoutsThisMonth;
         }
 
         private void LoadTestData()
@@ -54,9 +53,10 @@ namespace Liftit.DataModel
             this.User = new UserModel("Divic", 92, "kg", 4);
 
             // create personal records
-            this.User.DisplayedPersonalRecords.Add(new PersonalRecord("SQ", "Squat", new DateTime(2014, 5, 12), 100, 5));
+            this.User.DisplayedPersonalRecords.Add(new PersonalRecord("SQ", "Squat", new DateTime(2014, 5, 12), 130, 2));
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("DL", "Deadlift", new DateTime(2014, 5, 30), 135, 5));
-            this.User.DisplayedPersonalRecords.Add(new PersonalRecord("BP", "Bench press", new DateTime(2014, 10, 23), 100, 2));
+            this.User.DisplayedPersonalRecords.Add(new PersonalRecord("BP", "Bench press", new DateTime(2014, 10, 23), 105, 2));
+            this.User.DisplayedPersonalRecords.Add(new PersonalRecord("OHP", "Overhead press", new DateTime(2014,10,25), 70, 2));
 
             //create exercises
             FinishedExerciseModel exerciseOne = new FinishedExerciseModel("SQ", "Squat", ExerciseModel.MuscleGroups.Quads, new List<ExerciseSetModel> { new ExerciseSetModel(90, 5), new ExerciseSetModel(110, 3) });
@@ -69,7 +69,7 @@ namespace Liftit.DataModel
             FinishedExerciseModel exerciseEight = new FinishedExerciseModel("BC", "Bicep curl", ExerciseModel.MuscleGroups.Biceps, new List<ExerciseSetModel> { new ExerciseSetModel(20, 8), new ExerciseSetModel(20, 5) });
 
             // create Workouts
-            this.AddWorkout("Cucanj ludnica", new DateTime(2014, 5, 12), "Titan gym", new List<FinishedExerciseModel> { exerciseOne, exerciseTwo, exerciseFive, exerciseSix, exerciseSeven, exerciseEight });
+            this.AddWorkout("Cucanj ludnica", DateTime.Now, "Titan gym", new List<FinishedExerciseModel> { exerciseOne, exerciseTwo, exerciseFive, exerciseSix, exerciseSeven, exerciseEight });
             this.AddWorkout("Pokidao mrtvo", new DateTime(2014, 5, 30), "Titan gym", new List<FinishedExerciseModel> { exerciseThree, exerciseFour });
         }
 
@@ -80,6 +80,12 @@ namespace Liftit.DataModel
         {
             this.TrackedWorkouts.Add(new WorkoutModel(workoutName, workoutDate, location, finishedExercises));
             this.WorkoutsByWeek = GroupWorkoutsByWeek(this.TrackedWorkouts);
+            // increment workouts this month if necessary
+            if (workoutDate.Year == DateTime.Now.Year && workoutDate.Month == DateTime.Now.Month)
+            {
+                WorkoutsThisMonth++;
+                OnPropertyChanged("WorkoutsThisMonth");
+            }
             OnPropertyChanged("WorkoutsByWeek");
         }
 
@@ -95,7 +101,6 @@ namespace Liftit.DataModel
             return groupByWeek.ToDictionary(x => x.Key, x => x.Select(y => y.Workout).ToList()); ;
         }
 
-        //TODO: fix start of week, it doesn't work correctly. Add timezone support!
         /// <summary>
         // A method that takes a DateTime and outputs a string representing the week of that date
         // in the following format: "Week dd.MM to dd.MM"
@@ -104,7 +109,8 @@ namespace Liftit.DataModel
         private string GetWeekFromDate(DateTime dateTime)
         {
             var day = dateTime.Day;
-            var dayOfWeek = (int)dateTime.DayOfWeek;
+            // I did this because the default DayOfWeek index starts at sunday as 0, and I want monday to be index 0
+            var dayOfWeek = ((int)dateTime.DayOfWeek - 1)%7;
             var startOfWeek = dateTime.AddDays(-dayOfWeek);
             var endOfWeek = startOfWeek.AddDays(7);
             return String.Format("Week {0} to {1}", startOfWeek.ToString("dd.MM"), endOfWeek.ToString("dd.MM"));
