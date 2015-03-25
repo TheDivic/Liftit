@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
@@ -72,7 +73,7 @@ namespace Liftit
         /// <summary>
         /// Saves the tracked workout to the model
         /// </summary>
-        private void SaveWorkoutButton_Click(object sender, RoutedEventArgs e)
+        private async void SaveWorkoutButton_Click(object sender, RoutedEventArgs e)
         {
             List<FinishedExerciseModel> finishedExercises = new List<FinishedExerciseModel>();
 
@@ -105,7 +106,7 @@ namespace Liftit
                 return;
             }
 
-            appData.AddWorkout(WorkoutName.Text, WorkoutDate.Date.DateTime, WorkoutLocation.Text, finishedExercises);
+            await appData.AddWorkout(WorkoutName.Text, WorkoutDate.Date.DateTime, WorkoutLocation.Text, finishedExercises);
             Frame.Navigate(typeof(PivotPage));
         }
 

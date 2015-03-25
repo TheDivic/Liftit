@@ -12,6 +12,7 @@ using Windows.ApplicationModel.Resources;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics.Display;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -84,10 +85,18 @@ namespace Liftit
             Frame.Navigate(typeof(NewWorkoutPage));
         }
 
-        private void StackPanel_Tapped(object sender, TappedRoutedEventArgs e)
+        private void WorkoutName_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            StackPanel senderPanel = (StackPanel)sender;
+            TextBlock senderPanel = (TextBlock)sender;
             Frame.Navigate(typeof(FinishedWorkoutPage), senderPanel.DataContext);
+        }
+
+
+        private async void DeleteWorkoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+            WorkoutModel workoutToDelete = (WorkoutModel)button.DataContext;
+            await appData.DeleteWorkout(workoutToDelete);
         }
     }
 }

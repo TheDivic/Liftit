@@ -6,6 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Liftit.Common;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
+using Windows.Storage;
+using System.IO;
+using System.Diagnostics;
+
 
 namespace Liftit.DataModel
 {
@@ -18,16 +24,19 @@ namespace Liftit.DataModel
         public ObservableCollection<WorkoutModel> TrackedWorkouts { get; private set; }
         // Workouts grouped by week
         public Dictionary<string, List<WorkoutModel>> WorkoutsByWeek { get; private set; }
-        public ObservableCollection<ExerciseModel> KnownExercises {get; private set; }
-        
+        public ObservableCollection<ExerciseModel> KnownExercises { get; private set; }
+
         public int WorkoutsThisMonth { get; private set; }
         public int WorkoutsBehindSchedule { get; private set; }
+
+        private string USER_FILENAME = "user.json";
+        private string WORKOUTS_FILENAME = "workouts.json";
 
         public AppDataModel()
         {
             this.User = new UserModel("Anonymous", 0, "nil", 0);
             this.TrackedWorkouts = new ObservableCollection<WorkoutModel>();
-            this.WorkoutsByWeek = new Dictionary<string,List<WorkoutModel>>();
+            this.WorkoutsByWeek = new Dictionary<string, List<WorkoutModel>>();
             this.KnownExercises = new ObservableCollection<ExerciseModel>() 
             { 
                 new ExerciseModel("SQ", "Squat", ExerciseModel.MuscleGroups.Quads),
@@ -40,14 +49,17 @@ namespace Liftit.DataModel
             };
         }
 
-        public void LoadDataFromMemory()
+        public async Task LoadDataFromLocalFolder()
         {
-            LoadTestData();
-            this.WorkoutsThisMonth = TrackedWorkouts.Where(x => x.WorkoutDate.Year == DateTime.Now.Year && x.WorkoutDate.Month == DateTime.Now.Month).Count() ;
+            //LoadTestData();
+            LoadTestUser();
+
+            await DeserializeWorkouts();
+            this.WorkoutsThisMonth = TrackedWorkouts.Where(x => x.WorkoutDate.Year == DateTime.Now.Year && x.WorkoutDate.Month == DateTime.Now.Month).Count();
             this.WorkoutsBehindSchedule = this.User.WorkoutsPerWeek * 4 - this.WorkoutsThisMonth;
         }
 
-        private void LoadTestData()
+        private void LoadTestUser()
         {
             // Create user
             this.User = new UserModel("Divic", 92, "kg", 4);
@@ -56,29 +68,78 @@ namespace Liftit.DataModel
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("SQ", "Squat", new DateTime(2014, 5, 12), 130, 2));
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("DL", "Deadlift", new DateTime(2014, 5, 30), 135, 5));
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("BP", "Bench press", new DateTime(2014, 10, 23), 105, 2));
-            this.User.DisplayedPersonalRecords.Add(new PersonalRecord("OHP", "Overhead press", new DateTime(2014,10,25), 70, 2));
-
-            //create exercises
-            FinishedExerciseModel exerciseOne = new FinishedExerciseModel("SQ", "Squat", ExerciseModel.MuscleGroups.Quads, new List<ExerciseSetModel> { new ExerciseSetModel(90, 5), new ExerciseSetModel(110, 3) });
-            FinishedExerciseModel exerciseTwo = new FinishedExerciseModel("OHP", "Overhead press", ExerciseModel.MuscleGroups.Shoulders, new List<ExerciseSetModel> { new ExerciseSetModel(50, 5), new ExerciseSetModel(55, 5) });
-            FinishedExerciseModel exerciseThree = new FinishedExerciseModel("DL", "Deadlift", ExerciseModel.MuscleGroups.Back, new List<ExerciseSetModel> { new ExerciseSetModel(110, 5), new ExerciseSetModel(135, 5) });
-            FinishedExerciseModel exerciseFour = new FinishedExerciseModel("BP", "Bench press", ExerciseModel.MuscleGroups.Chest, new List<ExerciseSetModel> { new ExerciseSetModel(80, 5), new ExerciseSetModel(90, 3) });
-            FinishedExerciseModel exerciseFive = new FinishedExerciseModel("BC", "Bicep curl", ExerciseModel.MuscleGroups.Biceps, new List<ExerciseSetModel> { new ExerciseSetModel(20, 8), new ExerciseSetModel(20, 5) });
-            FinishedExerciseModel exerciseSix = new FinishedExerciseModel("BC", "Bicep curl", ExerciseModel.MuscleGroups.Biceps, new List<ExerciseSetModel> { new ExerciseSetModel(20, 8), new ExerciseSetModel(20, 5) });
-            FinishedExerciseModel exerciseSeven = new FinishedExerciseModel("BC", "Bicep curl", ExerciseModel.MuscleGroups.Biceps, new List<ExerciseSetModel> { new ExerciseSetModel(20, 8), new ExerciseSetModel(20, 5) });
-            FinishedExerciseModel exerciseEight = new FinishedExerciseModel("BC", "Bicep curl", ExerciseModel.MuscleGroups.Biceps, new List<ExerciseSetModel> { new ExerciseSetModel(20, 8), new ExerciseSetModel(20, 5) });
-
-            // create Workouts
-            this.AddWorkout("Cucanj ludnica", DateTime.Now, "Titan gym", new List<FinishedExerciseModel> { exerciseOne, exerciseTwo, exerciseFive, exerciseSix, exerciseSeven, exerciseEight });
-            this.AddWorkout("Pokidao mrtvo", new DateTime(2014, 5, 30), "Titan gym", new List<FinishedExerciseModel> { exerciseThree, exerciseFour });
+            this.User.DisplayedPersonalRecords.Add(new PersonalRecord("OHP", "Overhead press", new DateTime(2014, 10, 25), 70, 2));
         }
+
+        public async Task WriteDataToLocalFolder()
+        {
+            var serializer = new DataContractJsonSerializer(typeof(ObservableCollection<WorkoutModel>));
+            using (var stream = await ApplicationData.Current.LocalFolder.OpenStreamForWriteAsync(
+               WORKOUTS_FILENAME,
+               CreationCollisionOption.ReplaceExisting
+               ))
+            {
+                serializer.WriteObject(stream, this.TrackedWorkouts);
+            }
+        }
+
+        #region Serialization methods
+        private async Task SerializeUser()
+        {
+            var serializer = new DataContractJsonSerializer(typeof(UserModel));
+            using (var stream = await ApplicationData.Current.LocalFolder.OpenStreamForWriteAsync(
+               USER_FILENAME,
+               CreationCollisionOption.ReplaceExisting
+               ))
+            {
+                serializer.WriteObject(stream, this.User);
+            }
+        }
+
+        private async Task DeserializeUser()
+        {
+            var serializer = new DataContractJsonSerializer(typeof(UserModel));
+            using (var stream = await ApplicationData.Current.LocalFolder.OpenStreamForWriteAsync(
+               USER_FILENAME,
+               CreationCollisionOption.ReplaceExisting
+               ))
+            {
+                serializer.WriteObject(stream, this.User);
+            }
+        }
+
+        private async Task SerializeWorkouts()
+        {
+            var serializer = new DataContractJsonSerializer(typeof(ObservableCollection<WorkoutModel>));
+            using (var stream = await ApplicationData.Current.LocalFolder.OpenStreamForWriteAsync(
+               WORKOUTS_FILENAME,
+               CreationCollisionOption.ReplaceExisting
+               ))
+            {
+                serializer.WriteObject(stream, this.TrackedWorkouts);
+            }
+        }
+
+        private async Task DeserializeWorkouts()
+        {
+            var stream = await ApplicationData.Current.LocalFolder.OpenStreamForReadAsync(WORKOUTS_FILENAME);
+            var serializer = new DataContractJsonSerializer(typeof(ObservableCollection<WorkoutModel>));
+
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                this.TrackedWorkouts =  (ObservableCollection<WorkoutModel>)serializer.ReadObject(stream);
+                this.WorkoutsByWeek = GroupWorkoutsByWeek(this.TrackedWorkouts);
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Adds a new workout, regroups the workouts by week and raises the propertyChanged event
         /// </summary>
-        public void AddWorkout(string workoutName, DateTime workoutDate, string location, List<FinishedExerciseModel> finishedExercises)
+        public async Task AddWorkout(string workoutName, DateTime workoutDate, string location, List<FinishedExerciseModel> finishedExercises)
         {
             this.TrackedWorkouts.Add(new WorkoutModel(workoutName, workoutDate, location, finishedExercises));
+            await this.SerializeWorkouts();
             this.WorkoutsByWeek = GroupWorkoutsByWeek(this.TrackedWorkouts);
             // increment workouts this month if necessary
             if (workoutDate.Year == DateTime.Now.Year && workoutDate.Month == DateTime.Now.Month)
@@ -86,6 +147,14 @@ namespace Liftit.DataModel
                 WorkoutsThisMonth++;
                 OnPropertyChanged("WorkoutsThisMonth");
             }
+            OnPropertyChanged("WorkoutsByWeek");
+        }
+
+        public async Task DeleteWorkout(WorkoutModel workout)
+        {
+            this.TrackedWorkouts.Remove(workout);
+            await this.SerializeWorkouts();
+            this.WorkoutsByWeek = GroupWorkoutsByWeek(this.TrackedWorkouts);
             OnPropertyChanged("WorkoutsByWeek");
         }
 
@@ -110,7 +179,7 @@ namespace Liftit.DataModel
         {
             var day = dateTime.Day;
             // I did this because the default DayOfWeek index starts at sunday as 0, and I want monday to be index 0
-            var dayOfWeek = ((int)dateTime.DayOfWeek - 1)%7;
+            var dayOfWeek = ((int)dateTime.DayOfWeek - 1) % 7;
             var startOfWeek = dateTime.AddDays(-dayOfWeek);
             var endOfWeek = startOfWeek.AddDays(7);
             return String.Format("Week {0} to {1}", startOfWeek.ToString("dd.MM"), endOfWeek.ToString("dd.MM"));
@@ -141,6 +210,7 @@ namespace Liftit.DataModel
         public int WorkoutsPerWeek { get; set; }
         public ObservableCollection<PersonalRecord> DisplayedPersonalRecords { get; private set; }
 
+        public UserModel() { }
         public UserModel(string username, double weight, string weightUnit, int workoutsPerWeek)
         {
             this.Username = username;
@@ -190,7 +260,7 @@ namespace Liftit.DataModel
             this.ExerciseId = exerciseId;
             this.ExerciseName = fullName;
             this.PrimaryMuscleGroup = muscleGroup;
-            
+
 
             this.MuscleGroupNames = new Dictionary<MuscleGroups, string>()
             {
@@ -214,6 +284,8 @@ namespace Liftit.DataModel
             this.PrimaryMuscleGroupName = this.MuscleGroupNames[this.PrimaryMuscleGroup];
         }
 
+        public ExerciseModel() { }
+
         public ExerciseModel(ExerciseModel other) : this(other.ExerciseId, other.ExerciseName, other.PrimaryMuscleGroup) { }
     }
 
@@ -223,13 +295,17 @@ namespace Liftit.DataModel
     public class FinishedExerciseModel : ExerciseModel
     {
         public List<ExerciseSetModel> Sets { get; set; }
-       
-        public FinishedExerciseModel(string exerciseId, string fullName, MuscleGroups muscleGroup, List<ExerciseSetModel> sets) : base(exerciseId, fullName, muscleGroup)
+
+        public FinishedExerciseModel() { }
+
+        public FinishedExerciseModel(string exerciseId, string fullName, MuscleGroups muscleGroup, List<ExerciseSetModel> sets)
+            : base(exerciseId, fullName, muscleGroup)
         {
             this.Sets = sets;
         }
 
-        public FinishedExerciseModel(ExerciseModel exercise, List<ExerciseSetModel> sets) : base(exercise)
+        public FinishedExerciseModel(ExerciseModel exercise, List<ExerciseSetModel> sets)
+            : base(exercise)
         {
             this.Sets = sets;
         }
@@ -239,6 +315,8 @@ namespace Liftit.DataModel
     {
         public double Weight { get; set; }
         public int Reps { get; set; }
+
+        public ExerciseSetModel() { }
 
         public ExerciseSetModel(double weight, int reps)
         {
@@ -254,6 +332,8 @@ namespace Liftit.DataModel
         public DateTime DateOfRecord { get; set; }
         public double Weight { get; set; }
         public int Reps { get; set; }
+
+        public PersonalRecord() { }
 
         public PersonalRecord(string exerciseId, string exerciseName, DateTime date, double weight, int reps)
         {
@@ -276,6 +356,8 @@ namespace Liftit.DataModel
         public List<FinishedExerciseModel> WorkoutFinishedExercises { get; set; }
 
         public List<string> WorkoutMuscleGroups { get; set; }
+
+        public WorkoutModel() { }
 
         public WorkoutModel(string workoutName, DateTime date, string location, List<FinishedExerciseModel> exercises)
         {

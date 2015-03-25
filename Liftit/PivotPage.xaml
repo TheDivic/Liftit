@@ -43,9 +43,9 @@
         </DataTemplate>
 
         <DataTemplate x:Key="TrackedWorkoutTemplate">
-            <StackPanel Margin="0,10,0,0" Tapped="StackPanel_Tapped">
+            <StackPanel Margin="0,10,0,0">
                 <TextBlock FontSize="24" Text="{Binding WorkoutDate}"></TextBlock>
-                <TextBlock FontSize="24" Text="{Binding WorkoutName}"></TextBlock>
+                <TextBlock Tapped="WorkoutName_Tapped" FontSize="24" Text="{Binding WorkoutName}"></TextBlock>
                 <GridView ItemsSource="{Binding WorkoutMuscleGroups}" ItemTemplate="{StaticResource WorkoutMuscleGroup}">
                     <GridView.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -53,6 +53,7 @@
                         </ItemsPanelTemplate>
                     </GridView.ItemsPanel>
                 </GridView>
+                <Button x:Name="DeleteWorkoutButton" Click="DeleteWorkoutButton_Click">Delete this workout</Button>
             </StackPanel>
         </DataTemplate>
 

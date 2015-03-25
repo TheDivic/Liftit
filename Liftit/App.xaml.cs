@@ -2,6 +2,7 @@
 using Liftit.DataModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -40,7 +41,6 @@ namespace Liftit
             this.Suspending += this.OnSuspending;
 
             this.appData = new AppDataModel();
-            this.appData.LoadDataFromMemory();
         }
 
         /// <summary>
@@ -57,6 +57,7 @@ namespace Liftit
                 this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
+            await this.appData.LoadDataFromLocalFolder();
 
             Frame rootFrame = Window.Current.Content as Frame;
 
