@@ -54,6 +54,7 @@ namespace Liftit.DataModel
             //LoadTestData();
             LoadTestUser();
 
+            //await DeserializeUser();
             await DeserializeWorkouts();
             this.WorkoutsThisMonth = TrackedWorkouts.Where(x => x.WorkoutDate.Year == DateTime.Now.Year && x.WorkoutDate.Month == DateTime.Now.Month).Count();
             this.WorkoutsBehindSchedule = this.User.WorkoutsPerWeek * 4 - this.WorkoutsThisMonth;
@@ -65,6 +66,7 @@ namespace Liftit.DataModel
             this.User = new UserModel("Divic", 92, "kg", 4);
 
             // create personal records
+            // TODO: implement the personal records system
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("SQ", "Squat", new DateTime(2014, 5, 12), 130, 2));
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("DL", "Deadlift", new DateTime(2014, 5, 30), 135, 5));
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("BP", "Bench press", new DateTime(2014, 10, 23), 105, 2));
@@ -98,13 +100,18 @@ namespace Liftit.DataModel
 
         private async Task DeserializeUser()
         {
-            var serializer = new DataContractJsonSerializer(typeof(UserModel));
-            using (var stream = await ApplicationData.Current.LocalFolder.OpenStreamForWriteAsync(
-               USER_FILENAME,
-               CreationCollisionOption.ReplaceExisting
-               ))
+            var files = await ApplicationData.Current.LocalFolder.GetFilesAsync();
+            var userFile = files.Where(x => x.Name == USER_FILENAME).FirstOrDefault();
+
+            if (userFile != null)
             {
-                serializer.WriteObject(stream, this.User);
+                var stream = await userFile.OpenStreamForReadAsync();
+                var serializer = new DataContractJsonSerializer(typeof(UserModel));
+
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    this.User = (UserModel)serializer.ReadObject(stream);
+                }
             }
         }
 
@@ -122,13 +129,20 @@ namespace Liftit.DataModel
 
         private async Task DeserializeWorkouts()
         {
-            var stream = await ApplicationData.Current.LocalFolder.OpenStreamForReadAsync(WORKOUTS_FILENAME);
-            var serializer = new DataContractJsonSerializer(typeof(ObservableCollection<WorkoutModel>));
+            var files = await ApplicationData.Current.LocalFolder.GetFilesAsync();
+            var workoutFile = files.Where(x => x.Name == WORKOUTS_FILENAME).FirstOrDefault();
 
-            using (StreamReader reader = new StreamReader(stream))
+            if (workoutFile != null)
             {
-                this.TrackedWorkouts =  (ObservableCollection<WorkoutModel>)serializer.ReadObject(stream);
-                this.WorkoutsByWeek = GroupWorkoutsByWeek(this.TrackedWorkouts);
+                //var stream = await ApplicationData.Current.LocalFolder.OpenStreamForReadAsync(WORKOUTS_FILENAME);]
+                var stream = await workoutFile.OpenStreamForReadAsync();
+                var serializer = new DataContractJsonSerializer(typeof(ObservableCollection<WorkoutModel>));
+
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    this.TrackedWorkouts = (ObservableCollection<WorkoutModel>)serializer.ReadObject(stream);
+                    this.WorkoutsByWeek = GroupWorkoutsByWeek(this.TrackedWorkouts);
+                }
             }
         }
         #endregion
@@ -136,9 +150,9 @@ namespace Liftit.DataModel
         /// <summary>
         /// Adds a new workout, regroups the workouts by week and raises the propertyChanged event
         /// </summary>
-        public async Task AddWorkout(string workoutName, DateTime workoutDate, string location, List<FinishedExerciseModel> finishedExercises)
+        public async Task AddWorkout(string workoutNote, DateTime workoutDate, string location, List<FinishedExerciseModel> finishedExercises)
         {
-            this.TrackedWorkouts.Add(new WorkoutModel(workoutName, workoutDate, location, finishedExercises));
+            this.TrackedWorkouts.Add(new WorkoutModel(workoutNote, workoutDate, location, finishedExercises));
             await this.SerializeWorkouts();
             this.WorkoutsByWeek = GroupWorkoutsByWeek(this.TrackedWorkouts);
             // increment workouts this month if necessary
@@ -350,7 +364,7 @@ namespace Liftit.DataModel
     /// </summary>
     public class WorkoutModel
     {
-        public string WorkoutName { get; set; }
+        public string WorkoutNote { get; set; }
         public DateTime WorkoutDate { get; set; }
         public string WorkoutLocation { get; set; }
         public List<FinishedExerciseModel> WorkoutFinishedExercises { get; set; }
@@ -359,9 +373,9 @@ namespace Liftit.DataModel
 
         public WorkoutModel() { }
 
-        public WorkoutModel(string workoutName, DateTime date, string location, List<FinishedExerciseModel> exercises)
+        public WorkoutModel(string workoutNote, DateTime date, string location, List<FinishedExerciseModel> exercises)
         {
-            this.WorkoutName = workoutName;
+            this.WorkoutNote = workoutNote;
             this.WorkoutDate = date;
             this.WorkoutLocation = location;
             this.WorkoutFinishedExercises = exercises;

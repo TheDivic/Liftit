@@ -44,7 +44,7 @@
             <TextBlock FontSize="24" Foreground="Gray">I did this workout at:</TextBlock>
             <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" Text="{Binding WorkoutLocation}" FontSize="24"></TextBlock>
             <TextBlock FontSize="24" Foreground="Gray">Note to myself:</TextBlock>
-            <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" Text="{Binding WorkoutName}" FontSize="24"></TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0,0,0,10" Text="{Binding WorkoutNote}" FontSize="24"></TextBlock>
             <TextBlock FontSize="24" Foreground="Gray">I did these exercises:</TextBlock>
             <ListView ItemsSource="{Binding WorkoutFinishedExercises}" ItemTemplate="{StaticResource ExerciseTemplate}"></ListView>
         </StackPanel>

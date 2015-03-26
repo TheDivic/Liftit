@@ -93,7 +93,7 @@ namespace Liftit
                 inputError.ShowAt(ContentRoot);
                 return;
             }
-            else if (String.IsNullOrEmpty(WorkoutName.Text))
+            else if (String.IsNullOrEmpty(WorkoutNote.Text))
             {
                 errorText.Text = "Give a name to your workout before saving.";
                 inputError.ShowAt(ContentRoot);
@@ -106,7 +106,7 @@ namespace Liftit
                 return;
             }
 
-            await appData.AddWorkout(WorkoutName.Text, WorkoutDate.Date.DateTime, WorkoutLocation.Text, finishedExercises);
+            await appData.AddWorkout(WorkoutNote.Text, WorkoutDate.Date.DateTime, WorkoutLocation.Text, finishedExercises);
             Frame.Navigate(typeof(PivotPage));
         }
 
