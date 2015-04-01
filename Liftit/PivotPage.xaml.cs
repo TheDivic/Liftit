@@ -58,6 +58,10 @@ namespace Liftit
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             this.DefaultViewModel["appData"] = appData;
+            RenderWorkoutsGrayArc();
+            RenderPercentageGrayArc();
+            RenderWorkoutsArc();
+            RenderPercentageArc();
         }
 
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
@@ -98,5 +102,128 @@ namespace Liftit
             WorkoutModel workoutToDelete = (WorkoutModel)button.DataContext;
             await appData.DeleteWorkout(workoutToDelete);
         }
+
+        private double Radius = 80;
+        private double WorkoutsAngle;
+        private double CircleThickness = 6;
+        private double PercentageAngle;
+        private double CircleMargin = 10;
+        public void RenderWorkoutsArc()
+        {
+
+            WorkoutsAngle = (80 * 360) / 100;
+
+            Point startPoint = new Point(Radius, 0);
+            Point endPoint = ComputeCartesianCoordinate(WorkoutsAngle, Radius);
+            endPoint.X += Radius;
+            endPoint.Y += Radius;
+
+            WorkoutsCircle.Width = Radius * 2 + CircleThickness;
+            WorkoutsCircle.Height = Radius * 2 + CircleThickness;
+            WorkoutsCircle.Margin = new Thickness(CircleThickness, CircleThickness + CircleMargin, 0, 0);
+
+            bool largeArc = WorkoutsAngle > 180.0;
+
+            Size outerArcSize = new Size(Radius, Radius);
+
+            WorkoutsPathFigure.StartPoint = startPoint;
+
+            if (startPoint.X == Math.Round(endPoint.X) && startPoint.Y == Math.Round(endPoint.Y))
+                endPoint.X -= 0.01;
+
+            WorkoutsArcSegment.Point = endPoint;
+            WorkoutsArcSegment.Size = outerArcSize;
+            WorkoutsArcSegment.IsLargeArc = largeArc;
+        }
+
+        public void RenderWorkoutsGrayArc()
+        {
+            Point startPoint = new Point(Radius, 0);
+            Point endPoint = ComputeCartesianCoordinate(360, Radius);
+            endPoint.X += Radius;
+            endPoint.Y += Radius;
+
+            WorkoutsGrayCircle.Width = Radius * 2 + CircleThickness;
+            WorkoutsGrayCircle.Height = Radius * 2 + CircleThickness;
+            WorkoutsGrayCircle.Margin = new Thickness(CircleThickness, CircleThickness + CircleMargin, 0, 0);
+
+            bool largeArc = 360 > 180.0;
+
+            Size outerArcSize = new Size(Radius, Radius);
+
+            WorkoutsGrayPathFigure.StartPoint = startPoint;
+
+            if (startPoint.X == Math.Round(endPoint.X) && startPoint.Y == Math.Round(endPoint.Y))
+                endPoint.X -= 0.01;
+
+            WorkoutsGrayArcSegment.Point = endPoint;
+            WorkoutsGrayArcSegment.Size = outerArcSize;
+            WorkoutsGrayArcSegment.IsLargeArc = largeArc;
+        }
+
+        public void RenderPercentageGrayArc()
+        {
+            Point startPoint = new Point(Radius, 0);
+            Point endPoint = ComputeCartesianCoordinate(360, Radius);
+            endPoint.X += Radius;
+            endPoint.Y += Radius;
+
+            PercentageGrayCircle.Width = Radius * 2 + CircleThickness;
+            PercentageGrayCircle.Height = Radius * 2 + CircleThickness;
+            PercentageGrayCircle.Margin = new Thickness(CircleThickness, CircleThickness + CircleMargin, 0, 0);
+
+            bool largeArc = 360 > 180.0;
+
+            Size outerArcSize = new Size(Radius, Radius);
+
+            PercentageGrayPathFigure.StartPoint = startPoint;
+
+            if (startPoint.X == Math.Round(endPoint.X) && startPoint.Y == Math.Round(endPoint.Y))
+                endPoint.X -= 0.01;
+
+            PercentageGrayArcSegment.Point = endPoint;
+            PercentageGrayArcSegment.Size = outerArcSize;
+            PercentageGrayArcSegment.IsLargeArc = largeArc;
+        }
+
+        public void RenderPercentageArc()
+        {
+
+            PercentageAngle = (60 * 360) / 100;
+
+            Point startPoint = new Point(Radius, 0);
+            Point endPoint = ComputeCartesianCoordinate(PercentageAngle, Radius);
+            endPoint.X += Radius;
+            endPoint.Y += Radius;
+
+            PercentageCircle.Width = Radius * 2 + CircleThickness;
+            PercentageCircle.Height = Radius * 2 + CircleThickness;
+            PercentageCircle.Margin = new Thickness(CircleThickness, CircleThickness + CircleMargin, 0, 0);
+
+            bool largeArc = PercentageAngle > 180.0;
+
+            Size outerArcSize = new Size(Radius, Radius);
+
+            PercentagePathFigure.StartPoint = startPoint;
+
+            if (startPoint.X == Math.Round(endPoint.X) && startPoint.Y == Math.Round(endPoint.Y))
+                endPoint.X -= 0.01;
+
+            PercentageArcSegment.Point = endPoint;
+            PercentageArcSegment.Size = outerArcSize;
+            PercentageArcSegment.IsLargeArc = largeArc;
+        }
+
+        private Point ComputeCartesianCoordinate(double angle, double radius)
+        {
+            double angleRad = (Math.PI / 180.0) * (angle - 90);
+
+            double x = radius * Math.Cos(angleRad);
+            double y = radius * Math.Sin(angleRad);
+
+            return new Point(x, y);
+        }
     }
+
+
 }

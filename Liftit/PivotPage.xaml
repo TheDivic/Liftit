@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     DataContext="{Binding DefaultViewModel, RelativeSource={RelativeSource Self}}"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="#3C4457">
     <Page.Transitions>
         <TransitionCollection>
             <NavigationThemeTransition>
@@ -64,37 +64,138 @@
                 <ListView ItemsSource="{Binding Value}" ItemTemplate="{StaticResource TrackedWorkoutTemplate}"></ListView>
             </StackPanel>
         </DataTemplate>
+
+        <DataTemplate x:Key="PivotHeaderTemplate">
+            <TextBlock Margin="0,10,0,0" FontWeight="Light"  FontSize="35" Text="{Binding}"></TextBlock>
+        </DataTemplate>
     </Page.Resources>
     <Grid>
         <Pivot x:Uid="Pivot" 
-               Title="Liftit - an app for real strength training" 
+               Margin="0,0,0,0"
                x:Name="pivot" 
                CommonNavigationTransitionInfo.IsStaggerElement="True"
-               DataContext="{Binding appData}">
+               DataContext="{Binding appData}"
+               HeaderTemplate="{StaticResource PivotHeaderTemplate}"
+              >
 
             <!-- Dashboard pivot item -->
             <PivotItem
                 x:Uid="DashboardPivotItem"
-                Margin="19,14.5,0,0"
+                Margin="0,0,0,0"
                 Header="dashboard"
-                CommonNavigationTransitionInfo.IsStaggerElement="True">
-                <StackPanel Orientation="Vertical">
-                    <!-- Dashboard messages -->
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock FontSize="24">Hello, <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding User.Username}"></Run>!</TextBlock>
-                        <TextBlock FontSize="24">Your current weight is <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding User.Weight}"></Run><Run Text="{Binding User.WeightUnit}"></Run>.</TextBlock>
-                        <TextBlock FontSize="24">You tracked <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding WorkoutsThisMonth}"></Run> workouts this month.</TextBlock>
-                        <TextBlock FontSize="24">You are <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding WorkoutsBehindSchedule}"></Run> workouts behind schedule this month.</TextBlock>
-                    </StackPanel>
+                CommonNavigationTransitionInfo.IsStaggerElement="True"
+                >
 
-                    <!-- Personal records -->
-                    <ListView 
-                        ItemsSource="{Binding User.DisplayedPersonalRecords}"
-                        ItemTemplate="{StaticResource PersonalRecordTemplate}"
-                        HeaderTemplate="{StaticResource PersonalRecordsHeaderTemplate}"
-                        Margin="0,20,0,0">
-                    </ListView>
-                </StackPanel>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"></RowDefinition>
+                        <RowDefinition Height="3*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0">
+                        <Border Grid.Row="0" Margin="0,10,0,0" BorderBrush="#58606F" HorizontalAlignment="Stretch" VerticalAlignment="Top" BorderThickness="0.5"></Border>
+                        <TextBlock FontSize="46" FontWeight="Light" HorizontalAlignment="Center" Margin="0,20,0,0" TextWrapping="Wrap">Hello, <Run Foreground="#49D9FF" FontWeight="Light" Text="{Binding User.Username}"></Run></TextBlock>
+                        <TextBlock FontSize="24" Foreground="Gray" HorizontalAlignment="Center">tracked <Run Foreground="White" Text="{Binding TrackedWorkouts.Count}"></Run>
+                            workouts so far</TextBlock>
+                        <Border Grid.Row="0" BorderBrush="#58606F" Margin="0,20,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" BorderThickness="0.5"></Border>
+                    </StackPanel>
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"></RowDefinition>
+                            <RowDefinition Height="1*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                            <ColumnDefinition Width="1*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <Path Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" x:Name="WorkoutsGrayCircle" Stroke="Gray" Opacity="0.2"
+                        StrokeThickness="6"
+                          VerticalAlignment="Top">
+                            <Path.Data>
+                                <PathGeometry>
+                                    <PathGeometry.Figures>
+                                        <PathFigureCollection>
+                                            <PathFigure x:Name="WorkoutsGrayPathFigure">
+                                                <PathFigure.Segments>
+                                                    <PathSegmentCollection>
+                                                        <ArcSegment x:Name="WorkoutsGrayArcSegment" SweepDirection="Clockwise" />
+                                                    </PathSegmentCollection>
+                                                </PathFigure.Segments>
+                                            </PathFigure>
+                                        </PathFigureCollection>
+                                    </PathGeometry.Figures>
+                                </PathGeometry>
+                            </Path.Data>
+                        </Path>
+                        <!--<TextBlock Grid.Row="0" Grid.Column="0" FontSize="24">Your current weight is <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding User.Weight}"></Run><Run Text="{Binding User.WeightUnit}"></Run>.</TextBlock>-->
+                            <Path Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" x:Name="WorkoutsCircle" Stroke="#49D9FF"
+                        StrokeThickness="6"
+                          VerticalAlignment="Top">
+                                <Path.Data>
+                                    <PathGeometry>
+                                        <PathGeometry.Figures>
+                                            <PathFigureCollection>
+                                                <PathFigure x:Name="WorkoutsPathFigure">
+                                                    <PathFigure.Segments>
+                                                        <PathSegmentCollection>
+                                                            <ArcSegment x:Name="WorkoutsArcSegment" SweepDirection="Clockwise" />
+                                                        </PathSegmentCollection>
+                                                    </PathFigure.Segments>
+                                                </PathFigure>
+                                            </PathFigureCollection>
+                                        </PathGeometry.Figures>
+                                    </PathGeometry>
+                                </Path.Data>
+                            </Path>
+                        
+                        <TextBlock VerticalAlignment="Top" FontSize="20" Foreground="White" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,195,0,0">This month</TextBlock>
+                        <TextBlock Margin="0,75,0,0" Grid.Row="0" Grid.Column="0" FontSize="45" HorizontalAlignment="Center" VerticalAlignment="Top">9/16</TextBlock>
+
+                        <Path Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" x:Name="PercentageGrayCircle" Stroke="Gray" Opacity="0.2"
+                        StrokeThickness="6"
+                          VerticalAlignment="Top">
+                            <Path.Data>
+                                <PathGeometry>
+                                    <PathGeometry.Figures>
+                                        <PathFigureCollection>
+                                            <PathFigure x:Name="PercentageGrayPathFigure">
+                                                <PathFigure.Segments>
+                                                    <PathSegmentCollection>
+                                                        <ArcSegment x:Name="PercentageGrayArcSegment" SweepDirection="Clockwise" />
+                                                    </PathSegmentCollection>
+                                                </PathFigure.Segments>
+                                            </PathFigure>
+                                        </PathFigureCollection>
+                                    </PathGeometry.Figures>
+                                </PathGeometry>
+                            </Path.Data>
+                        </Path>
+                        <Path Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" x:Name="PercentageCircle" Stroke="#49D9FF"
+                        StrokeThickness="6"
+                          VerticalAlignment="Top">
+                            <Path.Data>
+                                <PathGeometry>
+                                    <PathGeometry.Figures>
+                                        <PathFigureCollection>
+                                            <PathFigure x:Name="PercentagePathFigure">
+                                                <PathFigure.Segments>
+                                                    <PathSegmentCollection>
+                                                        <ArcSegment x:Name="PercentageArcSegment" SweepDirection="Clockwise" />
+                                                    </PathSegmentCollection>
+                                                </PathFigure.Segments>
+                                            </PathFigure>
+                                        </PathFigureCollection>
+                                    </PathGeometry.Figures>
+                                </PathGeometry>
+                            </Path.Data>
+                        </Path>
+                        <TextBlock Margin="0,75,0,0" Grid.Row="0" Grid.Column="1" FontSize="45" HorizontalAlignment="Center" VerticalAlignment="Top">80%</TextBlock>
+                        <TextBlock VerticalAlignment="Top" FontSize="20" Foreground="White" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,195,0,0">Efficiency</TextBlock>
+                        <AppBarButton Grid.Row="1" Click="AddAppBarButton_Click" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="40" Icon="Add" Foreground="#C9F775" ></AppBarButton>
+                        <TextBlock VerticalAlignment="Top" FontSize="20" Foreground="White" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,180,0,0">Track a workout</TextBlock>
+                        <!--<TextBlock Grid.Row="0" Grid.Column="1" FontSize="24">You tracked <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding WorkoutsThisMonth}"></Run> workouts this month.</TextBlock>-->
+                    </Grid>
+                </Grid>
             </PivotItem>
 
             <!--Tracked workouts pivot item -->
@@ -102,21 +203,27 @@
                 x:Uid="WorkoutsPivotItem"
                 Margin="19,14.5,0,0"
                 Header="workouts">
+
                 <ScrollViewer>
                     <ListView ItemsSource="{Binding WorkoutsByWeek}" ItemTemplate="{StaticResource WeekTemplate}">
+                    </ListView>
+                </ScrollViewer>
+
+            </PivotItem>
+
+            <PivotItem
+                x:Uid="PersonalRecordsPivotItem"
+                Margin="19,14.5,0,0"
+                Header="records">
+                <ScrollViewer>
+                    <ListView 
+                        ItemsSource="{Binding User.DisplayedPersonalRecords}"
+                        ItemTemplate="{StaticResource PersonalRecordTemplate}"
+                        HeaderTemplate="{StaticResource PersonalRecordsHeaderTemplate}"
+                        Margin="0,20,0,0">
                     </ListView>
                 </ScrollViewer>
             </PivotItem>
         </Pivot>
     </Grid>
-
-    <Page.BottomAppBar>
-        <CommandBar>
-            <AppBarButton x:Uid="AddAppBarButton" x:Name="AddAppBarButton" Icon="Add" Label="Add" Click="AddAppBarButton_Click" />
-            <CommandBar.SecondaryCommands>
-                <AppBarButton x:Uid="HelpButton" x:Name="HelpButton" Label="How to use this app?" />
-                <AppBarButton x:Uid="EditProfileButton" x:Name="EditProfileButton" Label="Edit your profile" />
-            </CommandBar.SecondaryCommands>
-        </CommandBar>
-    </Page.BottomAppBar>
 </Page>

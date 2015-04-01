@@ -66,7 +66,7 @@ namespace Liftit.DataModel
             this.User = new UserModel("Divic", 92, "kg", 4);
 
             // create personal records
-            // TODO: implement the personal records system
+            // TODO: implement the personal records mechanism
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("SQ", "Squat", new DateTime(2014, 5, 12), 130, 2));
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("DL", "Deadlift", new DateTime(2014, 5, 30), 135, 5));
             this.User.DisplayedPersonalRecords.Add(new PersonalRecord("BP", "Bench press", new DateTime(2014, 10, 23), 105, 2));
