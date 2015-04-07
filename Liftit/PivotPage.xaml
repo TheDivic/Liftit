@@ -93,9 +93,14 @@
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0">
                         <Border Grid.Row="0" Margin="0,10,0,0" BorderBrush="#58606F" HorizontalAlignment="Stretch" VerticalAlignment="Top" BorderThickness="0.5"></Border>
-                        <TextBlock FontSize="46" FontWeight="Light" HorizontalAlignment="Center" Margin="0,20,0,0" TextWrapping="Wrap">Hello, <Run Foreground="#49D9FF" FontWeight="Light" Text="{Binding User.Username}"></Run></TextBlock>
-                        <TextBlock FontSize="24" Foreground="Gray" HorizontalAlignment="Center">tracked <Run Foreground="White" Text="{Binding TrackedWorkouts.Count}"></Run>
+                        <StackPanel Orientation="Horizontal" Margin="20,20,0,0">
+                            <Image Source="Assets/muscle.png" Width="60px" Margin="0,0,20,0"></Image>
+                            <StackPanel>
+                                <TextBlock FontSize="46" FontWeight="Light"  TextWrapping="Wrap">Hello, <Run Foreground="#49D9FF" FontWeight="Light" Text="{Binding User.Username}"></Run></TextBlock>
+                                <TextBlock FontSize="24" TextWrapping="Wrap" Foreground="Gray">tracked <Run Foreground="White" Text="{Binding TrackedWorkouts.Count}"></Run>
                             workouts so far</TextBlock>
+                            </StackPanel>
+                        </StackPanel>
                         <Border Grid.Row="0" BorderBrush="#58606F" Margin="0,20,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" BorderThickness="0.5"></Border>
                     </StackPanel>
                     <Grid Grid.Row="1">
@@ -149,7 +154,7 @@
                             </Path>
                         
                         <TextBlock VerticalAlignment="Top" FontSize="20" Foreground="White" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,195,0,0">This month</TextBlock>
-                        <TextBlock Margin="0,75,0,0" Grid.Row="0" Grid.Column="0" FontSize="45" HorizontalAlignment="Center" VerticalAlignment="Top">9/16</TextBlock>
+                        <TextBlock Margin="0,73,0,0" Grid.Row="0" Grid.Column="0" FontSize="45" HorizontalAlignment="Center" VerticalAlignment="Top">9/16</TextBlock>
 
                         <Path Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" x:Name="PercentageGrayCircle" Stroke="Gray" Opacity="0.2"
                         StrokeThickness="6"
@@ -189,11 +194,55 @@
                                 </PathGeometry>
                             </Path.Data>
                         </Path>
-                        <TextBlock Margin="0,75,0,0" Grid.Row="0" Grid.Column="1" FontSize="45" HorizontalAlignment="Center" VerticalAlignment="Top">80%</TextBlock>
-                        <TextBlock VerticalAlignment="Top" FontSize="20" Foreground="White" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,195,0,0">Efficiency</TextBlock>
-                        <AppBarButton Grid.Row="1" Click="AddAppBarButton_Click" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="40" Icon="Add" Foreground="#C9F775" ></AppBarButton>
-                        <TextBlock VerticalAlignment="Top" FontSize="20" Foreground="White" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,180,0,0">Track a workout</TextBlock>
-                        <!--<TextBlock Grid.Row="0" Grid.Column="1" FontSize="24">You tracked <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding WorkoutsThisMonth}"></Run> workouts this month.</TextBlock>-->
+
+                        <Path Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" x:Name="MaxLiftSumGrayCircle" Stroke="Gray" Opacity="0.2"
+                        StrokeThickness="6"
+                          VerticalAlignment="Top">
+                            <Path.Data>
+                                <PathGeometry>
+                                    <PathGeometry.Figures>
+                                        <PathFigureCollection>
+                                            <PathFigure x:Name="MaxLiftSumGrayPathFigure">
+                                                <PathFigure.Segments>
+                                                    <PathSegmentCollection>
+                                                        <ArcSegment x:Name="MaxLiftSumGrayArcSegment" SweepDirection="Clockwise" />
+                                                    </PathSegmentCollection>
+                                                </PathFigure.Segments>
+                                            </PathFigure>
+                                        </PathFigureCollection>
+                                    </PathGeometry.Figures>
+                                </PathGeometry>
+                            </Path.Data>
+                        </Path>
+                        <!--<TextBlock Grid.Row="0" Grid.Column="0" FontSize="24">Your current weight is <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding User.Weight}"></Run><Run Text="{Binding User.WeightUnit}"></Run>.</TextBlock>-->
+                        <Path Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" x:Name="MaxLiftSumCircle" Stroke="#C9F775"
+                        StrokeThickness="6"
+                          VerticalAlignment="Top">
+                            <Path.Data>
+                                <PathGeometry>
+                                    <PathGeometry.Figures>
+                                        <PathFigureCollection>
+                                            <PathFigure x:Name="MaxLiftSumPathFigure">
+                                                <PathFigure.Segments>
+                                                    <PathSegmentCollection>
+                                                        <ArcSegment x:Name="MaxLiftSumArcSegment" SweepDirection="Clockwise" />
+                                                    </PathSegmentCollection>
+                                                </PathFigure.Segments>
+                                            </PathFigure>
+                                        </PathFigureCollection>
+                                    </PathGeometry.Figures>
+                                </PathGeometry>
+                            </Path.Data>
+                        </Path>
+                        <TextBlock VerticalAlignment="Top" FontSize="20" Foreground="White" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,195,0,0">Max lift sum</TextBlock>
+                        <TextBlock Margin="0,80,0,0" Grid.Row="1" Grid.Column="0" FontSize="35" HorizontalAlignment="Center" VerticalAlignment="Top">400kg</TextBlock>
+
+
+                        <TextBlock Margin="0,73,0,0" Grid.Row="0" Grid.Column="1" FontSize="45" HorizontalAlignment="Center" VerticalAlignment="Top">80%</TextBlock>
+                        <TextBlock VerticalAlignment="Top" FontSize="20" Foreground="White" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,195,0,0">3 Month attendance</TextBlock>
+                        <AppBarButton Grid.Row="1" Click="AddAppBarButton_Click" Grid.Column="1" HorizontalAlignment="Center" Margin="0,70,0,0" FontSize="40" Icon="Add" Foreground="#C9F775" ></AppBarButton>
+                        <TextBlock VerticalAlignment="Top" FontSize="20" Foreground="White" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,195,0,0">Track a workout</TextBlock>
+                       
                     </Grid>
                 </Grid>
             </PivotItem>

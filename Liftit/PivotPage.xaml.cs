@@ -62,6 +62,8 @@ namespace Liftit
             RenderPercentageGrayArc();
             RenderWorkoutsArc();
             RenderPercentageArc();
+            RenderMaxLiftSumGrayArc();
+            RenderMaxLiftSumArc();
         }
 
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
@@ -107,7 +109,10 @@ namespace Liftit
         private double WorkoutsAngle;
         private double CircleThickness = 6;
         private double PercentageAngle;
+        private double MaxLiftSumAngle;
         private double CircleMargin = 10;
+
+
         public void RenderWorkoutsArc()
         {
 
@@ -212,6 +217,59 @@ namespace Liftit
             PercentageArcSegment.Point = endPoint;
             PercentageArcSegment.Size = outerArcSize;
             PercentageArcSegment.IsLargeArc = largeArc;
+        }
+
+        public void RenderMaxLiftSumGrayArc()
+        {
+            Point startPoint = new Point(Radius, 0);
+            Point endPoint = ComputeCartesianCoordinate(360, Radius);
+            endPoint.X += Radius;
+            endPoint.Y += Radius;
+
+            MaxLiftSumGrayCircle.Width = Radius * 2 + CircleThickness;
+            MaxLiftSumGrayCircle.Height = Radius * 2 + CircleThickness;
+            MaxLiftSumGrayCircle.Margin = new Thickness(CircleThickness, CircleThickness + CircleMargin, 0, 0);
+
+            bool largeArc = 360 > 180.0;
+
+            Size outerArcSize = new Size(Radius, Radius);
+
+            MaxLiftSumGrayPathFigure.StartPoint = startPoint;
+
+            if (startPoint.X == Math.Round(endPoint.X) && startPoint.Y == Math.Round(endPoint.Y))
+                endPoint.X -= 0.01;
+
+            MaxLiftSumGrayArcSegment.Point = endPoint;
+            MaxLiftSumGrayArcSegment.Size = outerArcSize;
+            MaxLiftSumGrayArcSegment.IsLargeArc = largeArc;
+        }
+
+        public void RenderMaxLiftSumArc()
+        {
+
+            MaxLiftSumAngle = (50 * 360) / 100;
+
+            Point startPoint = new Point(Radius, 0);
+            Point endPoint = ComputeCartesianCoordinate(MaxLiftSumAngle, Radius);
+            endPoint.X += Radius;
+            endPoint.Y += Radius;
+
+            MaxLiftSumCircle.Width = Radius * 2 + CircleThickness;
+            MaxLiftSumCircle.Height = Radius * 2 + CircleThickness;
+            MaxLiftSumCircle.Margin = new Thickness(CircleThickness, CircleThickness + CircleMargin, 0, 0);
+
+            bool largeArc = PercentageAngle > 180.0;
+
+            Size outerArcSize = new Size(Radius, Radius);
+
+            MaxLiftSumPathFigure.StartPoint = startPoint;
+
+            if (startPoint.X == Math.Round(endPoint.X) && startPoint.Y == Math.Round(endPoint.Y))
+                endPoint.X -= 0.01;
+
+            MaxLiftSumArcSegment.Point = endPoint;
+            MaxLiftSumArcSegment.Size = outerArcSize;
+            MaxLiftSumArcSegment.IsLargeArc = largeArc;
         }
 
         private Point ComputeCartesianCoordinate(double angle, double radius)
