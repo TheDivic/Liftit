@@ -21,6 +21,7 @@ namespace Liftit.DataModel
     public class AppDataModel : INotifyPropertyChanged
     {
         public UserModel User { get; private set; }
+
         public ObservableCollection<WorkoutModel> TrackedWorkouts { get; private set; }
         // Workouts grouped by week
         public Dictionary<string, List<WorkoutModel>> WorkoutsByWeek { get; private set; }
@@ -31,6 +32,8 @@ namespace Liftit.DataModel
 
         private string USER_FILENAME = "user.json";
         private string WORKOUTS_FILENAME = "workouts.json";
+
+        
 
         public AppDataModel()
         {
@@ -381,5 +384,7 @@ namespace Liftit.DataModel
             this.WorkoutFinishedExercises = exercises;
             this.WorkoutMuscleGroups = this.WorkoutFinishedExercises.Select(exercise => "#" + exercise.PrimaryMuscleGroupName).Distinct().ToList();
         }
+
+
     }
 }

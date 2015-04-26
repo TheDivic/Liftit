@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using WinRTXamlToolkit.Controls.DataVisualization.Charting;
 
 // The Pivot Application template is documented at http://go.microsoft.com/fwlink/?LinkID=391641
 
@@ -58,12 +59,14 @@ namespace Liftit
         private void NavigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
             this.DefaultViewModel["appData"] = appData;
+
+            List<MonthStatistics> stats = new List<MonthStatistics>() { new MonthStatistics(1, 2015, 500), new MonthStatistics(2, 2015, 700), new MonthStatistics(3,2015, 600)};
+            this.DefaultViewModel["statistics"] = stats;
+
             RenderWorkoutsGrayArc();
             RenderPercentageGrayArc();
             RenderWorkoutsArc();
             RenderPercentageArc();
-            RenderMaxLiftSumGrayArc();
-            RenderMaxLiftSumArc();
         }
 
         private void NavigationHelper_SaveState(object sender, SaveStateEventArgs e)
@@ -109,7 +112,6 @@ namespace Liftit
         private double WorkoutsAngle;
         private double CircleThickness = 6;
         private double PercentageAngle;
-        private double MaxLiftSumAngle;
         private double CircleMargin = 10;
 
 
@@ -219,58 +221,6 @@ namespace Liftit
             PercentageArcSegment.IsLargeArc = largeArc;
         }
 
-        public void RenderMaxLiftSumGrayArc()
-        {
-            Point startPoint = new Point(Radius, 0);
-            Point endPoint = ComputeCartesianCoordinate(360, Radius);
-            endPoint.X += Radius;
-            endPoint.Y += Radius;
-
-            MaxLiftSumGrayCircle.Width = Radius * 2 + CircleThickness;
-            MaxLiftSumGrayCircle.Height = Radius * 2 + CircleThickness;
-            MaxLiftSumGrayCircle.Margin = new Thickness(CircleThickness, CircleThickness + CircleMargin, 0, 0);
-
-            bool largeArc = 360 > 180.0;
-
-            Size outerArcSize = new Size(Radius, Radius);
-
-            MaxLiftSumGrayPathFigure.StartPoint = startPoint;
-
-            if (startPoint.X == Math.Round(endPoint.X) && startPoint.Y == Math.Round(endPoint.Y))
-                endPoint.X -= 0.01;
-
-            MaxLiftSumGrayArcSegment.Point = endPoint;
-            MaxLiftSumGrayArcSegment.Size = outerArcSize;
-            MaxLiftSumGrayArcSegment.IsLargeArc = largeArc;
-        }
-
-        public void RenderMaxLiftSumArc()
-        {
-
-            MaxLiftSumAngle = (50 * 360) / 100;
-
-            Point startPoint = new Point(Radius, 0);
-            Point endPoint = ComputeCartesianCoordinate(MaxLiftSumAngle, Radius);
-            endPoint.X += Radius;
-            endPoint.Y += Radius;
-
-            MaxLiftSumCircle.Width = Radius * 2 + CircleThickness;
-            MaxLiftSumCircle.Height = Radius * 2 + CircleThickness;
-            MaxLiftSumCircle.Margin = new Thickness(CircleThickness, CircleThickness + CircleMargin, 0, 0);
-
-            bool largeArc = PercentageAngle > 180.0;
-
-            Size outerArcSize = new Size(Radius, Radius);
-
-            MaxLiftSumPathFigure.StartPoint = startPoint;
-
-            if (startPoint.X == Math.Round(endPoint.X) && startPoint.Y == Math.Round(endPoint.Y))
-                endPoint.X -= 0.01;
-
-            MaxLiftSumArcSegment.Point = endPoint;
-            MaxLiftSumArcSegment.Size = outerArcSize;
-            MaxLiftSumArcSegment.IsLargeArc = largeArc;
-        }
 
         private Point ComputeCartesianCoordinate(double angle, double radius)
         {
@@ -283,5 +233,29 @@ namespace Liftit
         }
     }
 
+    public class MonthStatistics
+    {
+        public int Month { get; set; }
+        public int Year { get; set; }
+        public float WeightLifted { get; set; }
+        public string MonthName { get; set; }
+
+
+
+        public MonthStatistics(int month, int year, float weight)
+        {
+            this.Month = month;
+            this.Year = year;
+            this.WeightLifted = weight;
+            System.Globalization.DateTimeFormatInfo mfi = new System.Globalization.DateTimeFormatInfo();
+            this.MonthName = mfi.GetAbbreviatedMonthName(this.Month);
+        }
+
+        private void CalculateStatistics()
+        {
+            Random rand = new Random();
+            this.WeightLifted = rand.Next(0, 1000);
+        }
+    }
 
 }
