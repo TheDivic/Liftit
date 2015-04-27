@@ -48,7 +48,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="TrackedWorkoutTemplate">
-            <StackPanel Margin="0,10,0,0">
+            <StackPanel Margin="20,10,0,10">
                 <TextBlock FontSize="24" Text="{Binding WorkoutDate}"></TextBlock>
                 <TextBlock Tapped="WorkoutName_Tapped" TextTrimming="CharacterEllipsis" FontSize="24" Text="{Binding WorkoutNote}"></TextBlock>
                 <GridView ItemsSource="{Binding WorkoutMuscleGroups}" ItemTemplate="{StaticResource WorkoutMuscleGroup}">
@@ -63,23 +63,33 @@
         </DataTemplate>
 
         <DataTemplate x:Key="WeekTemplate">
-            <StackPanel>
-                <!-- Week identifer -->
-                <TextBlock FontSize="24" Foreground="Gray" Text="{Binding Key}"></TextBlock>
-                <ListView ItemsSource="{Binding Value}" ItemTemplate="{StaticResource TrackedWorkoutTemplate}"></ListView>
-            </StackPanel>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <!-- Week identifer -->
+                    <Border Margin="0,0,0,20" BorderBrush="#58606F" HorizontalAlignment="Stretch" VerticalAlignment="Top" BorderThickness="0.5"></Border>
+                    <TextBlock Margin="20,0,0,0" FontSize="24" Foreground="Gray" Text="{Binding Key}" HorizontalAlignment="Stretch"></TextBlock>
+                    <Border Margin="0,20,0,10" BorderBrush="#58606F" HorizontalAlignment="Stretch" VerticalAlignment="Top" BorderThickness="0.5"></Border>
+                </StackPanel>
+                <ListView Grid.Row="1" ItemsSource="{Binding Value}" ItemTemplate="{StaticResource TrackedWorkoutTemplate}"></ListView>
+            </Grid>
         </DataTemplate>
 
         <DataTemplate x:Key="PivotHeaderTemplate">
             <TextBlock Margin="0,10,0,0" FontWeight="Light"  FontSize="35" Text="{Binding}"></TextBlock>
         </DataTemplate>
     </Page.Resources>
+
     <Page.BottomAppBar>
         <CommandBar Background="#3C4457">
-            <AppBarButton Icon="Add" Label="Add"/>
+            <AppBarButton Click="AddAppBarButton_Click" Icon="Add" Label="Add"/>
             <AppBarButton Icon="Help" Label="Help"/>
         </CommandBar>
     </Page.BottomAppBar>
+
     <Grid x:Name="MainGrid" DataContext="{Binding}">
         <Pivot x:Uid="Pivot" 
                Margin="0,0,0,0"
@@ -104,12 +114,12 @@
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Row="0">
                         <Border Grid.Row="0" Margin="0,10,0,20" BorderBrush="#58606F" HorizontalAlignment="Stretch" VerticalAlignment="Top" BorderThickness="0.5"></Border>
-                        
-                                <TextBlock HorizontalAlignment="Center" FontSize="46" FontWeight="Light"  TextWrapping="Wrap">Hello, <Run Foreground="#49D9FF" FontWeight="Light" Text="{Binding User.Username}"></Run></TextBlock>
-                                <TextBlock HorizontalAlignment="Center" FontSize="24" TextWrapping="Wrap" Foreground="Gray">tracked <Run Foreground="White" Text="{Binding TrackedWorkouts.Count}"></Run>
+
+                        <TextBlock HorizontalAlignment="Center" FontSize="46" FontWeight="Light"  TextWrapping="Wrap">Hello, <Run Foreground="#49D9FF" FontWeight="Light" Text="{Binding User.Username}"></Run></TextBlock>
+                        <TextBlock HorizontalAlignment="Center" FontSize="24" TextWrapping="Wrap" Foreground="Gray">tracked <Run Foreground="White" Text="{Binding TrackedWorkouts.Count}"></Run>
                             workouts so far</TextBlock>
-                            
-                      
+
+
                         <Border Grid.Row="0" BorderBrush="#58606F" Margin="0,20,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" BorderThickness="0.5"></Border>
                     </StackPanel>
                     <Grid Grid.Row="1">
@@ -142,26 +152,26 @@
                             </Path.Data>
                         </Path>
                         <!--<TextBlock Grid.Row="0" Grid.Column="0" FontSize="24">Your current weight is <Run Foreground="{ThemeResource PhoneAccentBrush}" Text="{Binding User.Weight}"></Run><Run Text="{Binding User.WeightUnit}"></Run>.</TextBlock>-->
-                            <Path Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" x:Name="WorkoutsCircle" Stroke="#49D9FF"
+                        <Path Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" x:Name="WorkoutsCircle" Stroke="#49D9FF"
                         StrokeThickness="6"
                           VerticalAlignment="Top">
-                                <Path.Data>
-                                    <PathGeometry>
-                                        <PathGeometry.Figures>
-                                            <PathFigureCollection>
-                                                <PathFigure x:Name="WorkoutsPathFigure">
-                                                    <PathFigure.Segments>
-                                                        <PathSegmentCollection>
-                                                            <ArcSegment x:Name="WorkoutsArcSegment" SweepDirection="Clockwise" />
-                                                        </PathSegmentCollection>
-                                                    </PathFigure.Segments>
-                                                </PathFigure>
-                                            </PathFigureCollection>
-                                        </PathGeometry.Figures>
-                                    </PathGeometry>
-                                </Path.Data>
-                            </Path>
-                        
+                            <Path.Data>
+                                <PathGeometry>
+                                    <PathGeometry.Figures>
+                                        <PathFigureCollection>
+                                            <PathFigure x:Name="WorkoutsPathFigure">
+                                                <PathFigure.Segments>
+                                                    <PathSegmentCollection>
+                                                        <ArcSegment x:Name="WorkoutsArcSegment" SweepDirection="Clockwise" />
+                                                    </PathSegmentCollection>
+                                                </PathFigure.Segments>
+                                            </PathFigure>
+                                        </PathFigureCollection>
+                                    </PathGeometry.Figures>
+                                </PathGeometry>
+                            </Path.Data>
+                        </Path>
+
                         <TextBlock VerticalAlignment="Top" FontSize="20" Foreground="White" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,195,0,0">Tracked this month</TextBlock>
                         <TextBlock Margin="0,73,0,0" Grid.Row="0" Grid.Column="0" FontSize="45" HorizontalAlignment="Center" VerticalAlignment="Top">9/16</TextBlock>
 
@@ -203,15 +213,15 @@
                                 </PathGeometry>
                             </Path.Data>
                         </Path>
-                        
-                        
+
+
                         <TextBlock Margin="0,73,0,0" Grid.Row="0" Grid.Column="1" FontSize="45" HorizontalAlignment="Center" VerticalAlignment="Top">80%</TextBlock>
                         <TextBlock VerticalAlignment="Top" FontSize="20" Foreground="White" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,195,0,0">3 Month attendance</TextBlock>
-    
+
                         <TextBlock Grid.Row="1" Grid.Column="1"></TextBlock>
                         <Charting:Chart Grid.Row="1" Grid.ColumnSpan="2" x:Name="MyLineSeriesChart" Margin="10,0,10,0">
                             <Charting:Chart.Series>
-                            <Charting:ColumnSeries  Name="LineChart" ItemsSource="{Binding Path=DataContext.statistics, ElementName=MainGrid}" IndependentValuePath="MonthName" DependentValuePath="WeightLifted"/>
+                                <Charting:ColumnSeries  Name="LineChart" ItemsSource="{Binding Path=DataContext.statistics, ElementName=MainGrid}" IndependentValuePath="MonthName" DependentValuePath="WeightLifted"/>
                             </Charting:Chart.Series>
                             <Charting:Chart.LegendStyle>
                                 <Style TargetType="FrameworkElement">
@@ -226,11 +236,16 @@
             <!--Tracked workouts pivot item -->
             <PivotItem
                 x:Uid="WorkoutsPivotItem"
-                Margin="19,14.5,0,0"
+                Margin="0,10,0,0"
                 Header="workouts">
 
                 <ScrollViewer>
                     <ListView ItemsSource="{Binding WorkoutsByWeek}" ItemTemplate="{StaticResource WeekTemplate}">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
                     </ListView>
                 </ScrollViewer>
 

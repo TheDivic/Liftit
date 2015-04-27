@@ -60,7 +60,7 @@ namespace Liftit
         {
             this.DefaultViewModel["appData"] = appData;
 
-            List<MonthStatistics> stats = new List<MonthStatistics>() { new MonthStatistics(1, 2015, 500), new MonthStatistics(2, 2015, 700), new MonthStatistics(3,2015, 600)};
+            List<MonthStatistics> stats = new List<MonthStatistics>() { new MonthStatistics(1, 2015, 400), new MonthStatistics(2, 2015, 700), new MonthStatistics(3,2015, 600), new MonthStatistics(4,2015, 650), new MonthStatistics(5,2015, 750), new MonthStatistics(6, 2015, 800)};
             this.DefaultViewModel["statistics"] = stats;
 
             RenderWorkoutsGrayArc();
