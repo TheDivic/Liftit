@@ -101,6 +101,7 @@
     <Compile Include="Common\ObservableDictionary.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
+    <Compile Include="Converters\DateToWeekdayConverter.cs" />
     <Compile Include="DataModel\AppDataModel.cs" />
     <Compile Include="FinishedWorkoutPage.xaml.cs">
       <DependentUpon>FinishedWorkoutPage.xaml</DependentUpon>
@@ -134,11 +135,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-  </ItemGroup>
-  <ItemGroup>
-    <PRIResource Include="Strings\en-US\Resources.resw">
-      <SubType>Designer</SubType>
-    </PRIResource>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="WinRTXamlToolkit">

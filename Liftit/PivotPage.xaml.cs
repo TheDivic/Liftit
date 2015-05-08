@@ -30,7 +30,6 @@ namespace Liftit
     {
         private readonly NavigationHelper navigationHelper;
         private readonly ObservableDictionary defaultViewModel = new ObservableDictionary();
-        private readonly ResourceLoader resourceLoader = ResourceLoader.GetForCurrentView("Resources");
         private AppDataModel appData;
 
         public PivotPage()
@@ -92,12 +91,6 @@ namespace Liftit
         private void AddAppBarButton_Click(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(NewWorkoutPage));
-        }
-
-        private void WorkoutName_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            TextBlock senderPanel = (TextBlock)sender;
-            Frame.Navigate(typeof(FinishedWorkoutPage), senderPanel.DataContext);
         }
 
 
@@ -230,6 +223,12 @@ namespace Liftit
             double y = radius * Math.Sin(angleRad);
 
             return new Point(x, y);
+        }
+
+        private void WorkoutDay_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            TextBlock senderPanel = (TextBlock)sender;
+            Frame.Navigate(typeof(FinishedWorkoutPage), senderPanel.DataContext);
         }
     }
 
