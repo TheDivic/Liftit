@@ -67,14 +67,15 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock x:Name="WorkoutDay" 
+                                   FontWeight="Light"
                                    Grid.Column="0" 
-                                   FontSize="28" 
-                                   Margin="0,12,0,0" 
+                                   FontSize="30" 
+                                   Margin="0,0,0,10" 
                                    Text="{Binding WorkoutDate, Converter={StaticResource DateToWeekdayConverter}}"
                                    Tapped="WorkoutDay_Tapped">
                         </TextBlock>
 
-                        <AppBarButton Icon="Delete" Grid.Column="1" Click="DeleteWorkoutButton_Click" Margin="0,0,0,0" HorizontalAlignment="Right"></AppBarButton>
+                        <TextBlock Grid.Column="1" Tapped="DeleteWorkoutButton_Click" Margin="0,10,5,0" Text="&#xf141;" FontSize="30" FontFamily="/Resources/FontAwesome.otf#FontAwesome" HorizontalAlignment="Right"></TextBlock>
                     </Grid>
 
                     <Border Style="{StaticResource GrayHorizontalLine}" />
@@ -83,7 +84,9 @@
                                TextTrimming="CharacterEllipsis" 
                                Foreground="Gray" 
                                FontSize="22" 
-                               Text="{Binding WorkoutNote}">
+                               Text="{Binding WorkoutNote}"
+                               Width="340"
+                               HorizontalAlignment="Left">
                     </TextBlock>
 
                     <GridView Margin="0,10,0,0" ItemsSource="{Binding WorkoutMuscleGroups}" ItemTemplate="{StaticResource WorkoutMuscleGroup}">
@@ -106,7 +109,7 @@
 
                 <StackPanel x:Name="WeekHeader" Grid.Row="0">
                     <Border Margin="0,0,0,20" Style="{StaticResource GrayHorizontalLine}"></Border>
-                    <TextBlock FontSize="26" Text="{Binding Key}" HorizontalAlignment="Center"></TextBlock>
+                    <TextBlock FontSize="26" HorizontalAlignment="Center"><Run Text="&#xf073;" FontFamily="/Resources/FontAwesome.otf#FontAwesome"></Run>  <Run Text="{Binding Key}"></Run></TextBlock>
                     <Border Margin="0,20,0,10" Style="{StaticResource GrayHorizontalLine}"></Border>
                 </StackPanel>
 
@@ -142,6 +145,7 @@
                HeaderTemplate="{StaticResource PivotHeaderTemplate}"
               >
 
+            
             <!-- Dashboard pivot item -->
             <PivotItem
                 x:Uid="DashboardPivotItem"
@@ -158,7 +162,6 @@
 
                     <StackPanel x:Name="DashboardHeaderPanel" Grid.Row="0">
                         <Border Grid.Row="0" Margin="0,10,0,20" Style="{StaticResource GrayHorizontalLine}"></Border>
-
                         <TextBlock HorizontalAlignment="Center" FontSize="46" FontWeight="Light">
                             Hello, <Run Foreground="#49D9FF" FontWeight="Light" Text="{Binding User.Username}"></Run>
                         </TextBlock>
