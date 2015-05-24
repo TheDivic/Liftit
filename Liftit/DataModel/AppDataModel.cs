@@ -382,7 +382,7 @@ namespace Liftit.DataModel
             this.WorkoutDate = date;
             this.WorkoutLocation = location;
             this.WorkoutFinishedExercises = exercises;
-            this.WorkoutMuscleGroups = this.WorkoutFinishedExercises.Select(exercise => "#" + exercise.PrimaryMuscleGroupName).Distinct().ToList();
+            this.WorkoutMuscleGroups = this.WorkoutFinishedExercises.Select(exercise => exercise.PrimaryMuscleGroupName).Distinct().ToList();
         }
 
 
